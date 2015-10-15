@@ -26,7 +26,9 @@ $opciones = $crawler->filter('option')->each(function ($node, $index) {
 		$valor[0] = trim($valores[0]);
 		$valor[1] = trim($valores[1]);
 		
-		$sql = "INSERT INTO cursos (codCurso,nombre) VALUES ('$valor[0]', '$valor[1]')";
+		$val_codificado = utf8_decode ( $valor[1] );
+	
+		$sql = "INSERT INTO cursos (idCurso,nombre) VALUES ('$valor[0]', '$val_codificado')";
 		
 		$rs=$conn->query($sql);
 	
@@ -43,8 +45,6 @@ $opciones = $crawler->filter('option')->each(function ($node, $index) {
 
 echo "Cursos cargados exitosamente";
  
-
-
 
 
 

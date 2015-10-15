@@ -9,7 +9,7 @@
 $DBServer = 'localhost';
 $DBUser   = 'root';
 $DBPass   = '';
-$DBName   = 'previas';
+$DBName   = 'sistema_previas';
 
 $conn = new mysqli($DBServer, $DBUser, $DBPass, $DBName);
  
