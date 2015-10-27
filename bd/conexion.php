@@ -18,7 +18,7 @@ function conectar(){
 	// check connection
 	if ($conexion->connect_error) {
 	  trigger_error('Falló la conexion con la base de datos '  . $conexion->connect_error, E_USER_ERROR);
-	  return false;
+	  return null;
 	}
 	return $conexion;
 }
