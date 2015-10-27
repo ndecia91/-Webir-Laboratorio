@@ -3,7 +3,7 @@
 
 
 $bd = conectar();
-if($bd != false){
+if($bd != null){
 	$bd->autocommit(false);
 	
 	$bd->begin_transaction();
