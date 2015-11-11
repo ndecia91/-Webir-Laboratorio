@@ -6,54 +6,83 @@
 *
 */
 
-include ('../bd/conexion.php');
+include_once ('../persistencia/conexion.php');
+include_once('../persistencia/persistencia_grupos.php');
 require_once 'lib/goutte.phar';
 use Goutte\Client;
 
-$client = new Client();
-
 function obtener_grupo($url){
 	
+	$client = new Client();
+	
+	$crawler = $client->request('GET', $url);
+	$datos_grupo = obtener_datos_grupo($crawler);
+	guardar_grupo($datos_grupo);
+	
 }
- /*
-//Formulario con las materias
-$crawler = $client->request('GET', 'http://www1.bedelias.edu.uy/ingenieria/muestra_prev.obt_carrcic?car=7200');
 
+obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1013&crmin=1&crmax=1");
+obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1029&crmin=5&crmax=11");
+obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1012&crmin=1&crmax=3");
+obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1020&crmin=1&crmax=1");
+obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1511&crmin=1&crmax=1");
 
-//Obtengo todas las opciones del campo select y almaceno en la bd codigo y nombre
-
-$opciones = $crawler->filter('option')->each(function ($node, $index) {
-	global $datos_cursos;
-	global $conn;
-	if($index > 0){
-		$valores = explode(" - ",$node->html());
-		$valor[0] = trim($valores[0]);
-		$valor[1] = trim($valores[1]);
-		
-		$val_codificado = utf8_decode ( $valor[1] );
+function obtener_datos_grupo($crawler){
 	
-		$sql = "INSERT INTO cursos (idCurso,nombre) VALUES ('$valor[0]', '$val_codificado')";
-		
-		$rs=$conn->query($sql);
+	$datos_grupo = array();
 	
-		if($rs === false) {
-		  trigger_error('Error en SQL: ' . $sql . ' Error: ' . $conn->error, E_USER_ERROR);
-		  die();
-		} else {
-		  $rows_returned = $rs->num_rows;
+	//Obtengo codigo, nombre, min y max
+	$crawler->filter('.och')->each(function ($node, $index) use(&$datos_grupo, $crawler) {
+		
+		if($index == 1){
+			$texto = $node->text();
+			
+			//Extraigo codigo, nombre, minimo, maximo
+			preg_match('/\sGrupo:\s(?<idGrupo>\w+)-(?<nombre>.+)\sPuntaje\smínimo:\s(?<min>\d+).+Puntaje\smáximo:\s(?<max>\d+)/', $texto, $matches);
+			
+			$datos_grupo = array(
+				'idGrupo'	=> $matches['idGrupo'],
+				'nombre'	=> $matches['nombre'],
+				'min'		=> $matches['min'],
+				'max'		=> $matches['max'],
+				'cursos'		=> obtener_cursos_grupo($crawler)
+			);
+			
 		}
+	});
+			
+	return $datos_grupo;
 
-	}
+}
+
+function obtener_cursos_grupo($crawler){
 	
-});
-
-echo "Cursos cargados exitosamente";
- */
-
-
-
-
-
-
-
+	$cursos = array();
+	$crawler->filter('table table tr')->each(function ($node, $index) use (&$cursos) {
+		
+		if($index > 0 ){
+			//Obtengo los datos curso, nombre, actividad y puntaje
+			$datos_curso = array();
+			$node->filter('td')->each(function ($node, $index) use(&$datos_curso){
+				
+				switch ($index) {
+					case 0:
+						$datos_curso['idCurso'] = $node->text();
+						break;
+					case 2:
+						$datos_curso['actividad'] = $node->text();
+						break;
+					case 3:
+						$datos_curso['puntaje'] = $node->text();
+						break;
+				}
+			});
+			$cursos[$index] = $datos_curso; 
+			return $datos_curso;
+		}
+		
+	});
+	array_pop($cursos);
+	return $cursos;
+}
 ?>
