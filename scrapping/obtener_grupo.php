@@ -21,12 +21,6 @@ function obtener_grupo($url){
 	
 }
 
-obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1013&crmin=1&crmax=1");
-obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1029&crmin=5&crmax=11");
-obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1012&crmin=1&crmax=3");
-obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1020&crmin=1&crmax=1");
-obtener_grupo("http://www1.bedelias.edu.uy/ingenieria/muestra_prev.grupos?codgrp=1511&crmin=1&crmax=1");
-
 function obtener_datos_grupo($crawler){
 	
 	$datos_grupo = array();

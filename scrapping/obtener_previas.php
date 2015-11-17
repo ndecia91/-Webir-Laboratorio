@@ -6,42 +6,43 @@
 *
 */
 
-include ('../bd/conexion.php');
+include ('../persistencia/conexion.php');
 require_once 'lib/goutte.phar';
 use Goutte\Client;
 
-try {
-	$client = new Client();
+function obtener_previas($idCarrera){
+	try {
+		$client = new Client();
 
-	$idCarrera= 72;
+		$previaDeCurso;
 
-	$previaDeCurso;
+		//Abro conexion
+		$bd = conectar();
 
-	//Abro conexion
-	$bd = conectar();
-
-	if($bd != null){
-		$bd->autocommit(false);
-		
-		$bd->begin_transaction();
-		
-		$cursos= $bd->query("SELECT * FROM cursos");
-		
-		if($cursos != false and $cursos->num_rows != 0 ){
-			while($row = $cursos->fetch_assoc()) {
-				$idCurso= $row["idCurso"];
-				echo "----------------------------idCurso: " . $idCurso . "<br>";
-				obtenerPreviasCurso($idCarrera,$idCurso);
+		if($bd != null){
+			$bd->autocommit(false);
+			
+			$bd->begin_transaction();
+			
+			$cursos= $bd->query("SELECT * FROM curso_carrera WHERE idCarrera = '$idCarrera'");
+			
+			if($cursos != false and $cursos->num_rows != 0 ){
+				while($row = $cursos->fetch_assoc()) {
+					$idCurso= $row["idCurso"];
+					echo "----------------------------idCurso: " . $idCurso . "<br>";
+					obtenerPreviasCurso($idCarrera,$idCurso);
+				}
 			}
-		}
 
-		//Cierro conexion
-		$bd->close();
+			//Cierro conexion
+			$bd->close();
+		}
+	}
+	catch (Exception $e) {
+		echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
 	}
 }
-catch (Exception $e) {
-	echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
-}
+
 
 
 /*----------FUNCTIONS--------------*/

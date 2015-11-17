@@ -43,7 +43,4 @@ function obtener_cursos($idCarrera){
 
 }
 
- 
-obtener_cursos("7200");
-
 ?>

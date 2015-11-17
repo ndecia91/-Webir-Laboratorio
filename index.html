@@ -1,0 +1,27 @@
+<html>
+ 
+	<head>
+		<title>Grafo de previas</title>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/grafo.js"></script>
+	</head>
+	 
+	<body>
+		<div id="div_grafo"></div>
+		<select name="carrera" class="select_carrera">
+			<option value="7200">72-Ingeniería en Computación</option>
+		</select>
+		<a class="btn_seleccionar">Seleccionar</a>
+		<script>
+			jQuery(document).ready(function(){
+				jQuery(".btn_seleccionar").on("click", function(){
+					//Obtengo la carrera
+					var carrera = jQuery(".select_carrera").val();
+					obtenerGrafo(carrera);
+					
+				});
+			});
+		</script>
+	</body>
+ 
+</html>
