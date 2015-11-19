@@ -2,17 +2,17 @@
  
 	<head>
 		<title>Grafo de previas</title>
+		<link href="style.css" rel="stylesheet" />
+		<meta charset=utf-8 />
+		<meta name="viewport" content="user-scalable=no, initial-scale=1.0, 
+				minimum-scale=1.0, maximum-scale=1.0, minimal-ui">
 		<script type="text/javascript" src="js/jquery.js"></script>
 		<script type="text/javascript" src="js/grafo.js"></script>
+		<script type="text/javascript" src="js/cytoscape.js"></script>
+		<script type="text/javascript" src="js/cytoscape.min.js"></script>
 	</head>
-	 
-	<body>
-		<div id="div_grafo"></div>
-		<select name="carrera" class="select_carrera">
-			<option value="7200">72-Ingeniería en Computación</option>
-		</select>
-		<a class="btn_seleccionar">Seleccionar</a>
-		<script>
+
+	<script>
 			jQuery(document).ready(function(){
 				jQuery(".btn_seleccionar").on("click", function(){
 					//Obtengo la carrera
@@ -21,7 +21,70 @@
 					
 				});
 			});
-		</script>
+	</script>
+	<script>
+		$(function(){
+
+				obtenerGrafoDelServidor("7200");
+				var cy = window.cy = cytoscape({
+
+				container: document.getElementById('cy'),
+          		
+          		boxSelectionEnabled: false,
+          		
+          		autounselectify: true,
+				
+				 layout: {
+	    			//name: 'preset',
+	    			name: 'grid',
+	    			//fit: false,
+  				},
+					
+				style: [
+					{
+						selector: 'node',
+						style: {
+							'content': 'data(name)',
+							'text-valign': 'center',
+							'text-halign': 'center',
+							'shape':'roundrectangle',
+							'width':'label',
+							'height':'label',
+							'background-color': 'green',
+							'color':'white',
+							'padding-left' : '5',
+							'padding-right' : '5',
+							'padding-bottom' : '5',
+							'padding-top' : '5',
+						}
+					},
+						
+					{
+						selector: 'edge',
+						style: {
+							'width': 1,
+							'target-arrow-shape': 'triangle',
+							'line-color': '#9dbaea',
+							'target-arrow-color': '#9dbaea'
+							
+						}
+					}
+				],
+					
+				elements: grafo ,
+			});
+				test();
+					
+		//console.log(huerfanos);
+		});
+	</script>
+	 
+	<body>
+		<select name="carrera" class="select_carrera">
+			<option value="7200">72-Ingeniería en Computación</option>
+		</select>
+		<a class="btn_seleccionar">Seleccionar</a>
+		<div id="cy"></div>
 	</body>
  
 </html>
