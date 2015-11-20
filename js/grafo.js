@@ -1,5 +1,5 @@
 
-var grafo = null;
+var cy;
 
 function obtenerGrafoDelServidor(idCarrera) {
 			
@@ -16,7 +16,19 @@ function obtenerGrafoDelServidor(idCarrera) {
 			success:  function (response) {
 
 				grafo = jQuery.parseJSON(response);
-	
+				
+				cy = window.cy = cytoscape({
+
+					container: document.getElementById('cy'),
+					boxSelectionEnabled: false,
+					autounselectify: true,
+					layout: { name: 'grid' }, //fit: false, //name: 'preset', 
+					style: [ {selector: 'node', style: estilosNodos },
+							 { selector: 'edge', style: estilosAristas }
+					],
+					elements: grafo 
+					
+				});
 			}
 		});	
 }
