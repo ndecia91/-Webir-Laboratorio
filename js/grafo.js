@@ -1,5 +1,6 @@
 
 var cy;
+var cyr;
 
 function obtenerGrafoDelServidor(idCarrera) {
 			
@@ -18,22 +19,16 @@ function obtenerGrafoDelServidor(idCarrera) {
 				grafo = jQuery.parseJSON(response);
 				
 				cy = window.cy = cytoscape({
-
-					container: document.getElementById('cy'),
-					boxSelectionEnabled: false,
-					autounselectify: true,
-					layout: { name: 'grid' }, //fit: false, //name: 'preset', 
-					style: [ {selector: 'node', style: estilosNodos },
-							 { selector: 'edge', style: estilosAristas }
-					],
 					elements: grafo 
-					
 				});
+				
+				construirGrafoReducido(cy);
+				
 			}
 		});	
 }
 
-function modificarDatoNodo(idNodo, atributo, valor)
+function modificarDatoNodo(cy, idNodo, atributo, valor)
 {
 
 	var selector = '#' + idNodo ;
@@ -42,7 +37,7 @@ function modificarDatoNodo(idNodo, atributo, valor)
 
 }
 
-function obtenerDatosNodo(idNodo)
+function obtenerDatosNodo(cy, idNodo)
 {
 	var selector = '#' + idNodo ;
 	var nodo = cy.nodes(selector);
@@ -51,29 +46,30 @@ function obtenerDatosNodo(idNodo)
 }
 
 
-function modificarEstiloNodo(idNodo, atributo, valor)
+function modificarEstiloNodo(cy, idNodo, atributo, valor)
 {
+
 	var selector = '#' + idNodo ;
 	var nodo = cy.nodes(selector);
 	return nodo.style(atributo, valor);
 
 }
 
-function obtenerPosicionNodo(idNodo)
+function obtenerPosicionNodo(cy, idNodo)
 {
 	var selector = '#' + idNodo ;
 	var nodo = cy.nodes(selector);
 	return nodo.position();
 }
 
-function modificarPosicionNodo(idNodo, x, y)
+function modificarPosicionNodo(cy, idNodo, x, y)
 {
 	var selector = '#' + idNodo ;
 	var nodo = cy.nodes(selector);
 	nodo.position({x:x, y:y});
 }
 
-function obtenerDatosArista(idOrigen, idDestino)
+function obtenerDatosArista(cy, idOrigen, idDestino)
 {
 	var source = "[source='" + idOrigen + "']";
 	var target = "[target='" + idDestino + "']";
@@ -83,7 +79,7 @@ function obtenerDatosArista(idOrigen, idDestino)
 
 }
 
-function obtenerDatosAristasAdyacentes(idNodo)
+function obtenerDatosAristasAdyacentes(cy, idNodo)
 {
 
 	var selector = '#' + idNodo;
@@ -103,7 +99,7 @@ function obtenerDatosAristasAdyacentes(idNodo)
 }
 
 
-function obtenerDatosAristasIncidentes(idNodo)
+function obtenerDatosAristasIncidentes(cy, idNodo)
 {
 	var selector = '#' + idNodo;
 	var nodo = cy.nodes(selector);
@@ -122,7 +118,7 @@ function obtenerDatosAristasIncidentes(idNodo)
 	
 }
 
-function obtenerDatosNodosRaiz()
+function obtenerDatosNodosRaiz(cy)
 {
 
 	var nodos = cy.nodes();
@@ -137,40 +133,112 @@ function obtenerDatosNodosRaiz()
 	
 }
 
+function construirGrafoReducido(cy){
+	
+	var grafo = obtenerGrafoReducido(cy);
+	//Grafo reducido
+	cyr = window.cyr = cytoscape({
+		container: document.getElementById('cy'),
+		boxSelectionEnabled: false,
+		autounselectify: true,
+		layout: { name: 'grid' }, //fit: false, //name: 'preset', 
+		style: [ {selector: 'node', style: estilosNodos },
+				 { selector: 'edge', style: estilosAristas }
+		],
+		elements: grafo 	
+	});
+	
+	cargarEventos();
+}
+
+function obtenerGrafoReducido(cy){
+	var datosNodosCurso = obtenerDatosNodosTipoCurso(cy);
+	
+	var grafo = [];
+	datosNodosCurso.forEach(
+		function(nodo, i){
+			grafo.push({data: { id: nodo.id, name: nodo.name, estado: 'inhabilitado'}});
+		}
+	);
+	
+	var datos = obtenerDatosNodosRaiz(cy);
+	
+	for (i = 0; i < datos.length; i++) { 
+		agregarAristas(cy, grafo, datos[i].id);
+	}
+	
+	return grafo;
+}
+
+function obtenerDatosNodosTipoCurso(cy){
+	var nodos = cy.nodes('[tipo="CURSO"]');
+
+	
+	var datos = [];
+	nodos.forEach(
+		function (ele, i) {
+			datos.push(ele.data());
+		}
+	);
+	
+	return datos;
+}
+
+function agregarAristas(cy, grafo, idNodo){
+	//Obtengo hijos del nodo
+	var adyacentes = obtenerDatosAristasAdyacentes(cy, idNodo);
+	adyacentes.forEach(function(arista, i){
+		var nodoHijo = obtenerDatosNodo(cy, arista.target);
+		var tipoNodo = nodoHijo.tipo;
+		var nodosAdyacentes = [];
+		if(tipoNodo == "CURSO"){
+			nodosAdyacentes.push(nodoHijo);
+		else{
+			
+		}
+			//agrego arista
+			grafo.push({data: { source: idNodo, target: nodoHijo.id}});
+			agregarAristas(cy, grafo, nodoHijo.id);
+		}else{
+			agregarAristas(cy, grafo,)
+		}
+	});
+}
+
 function test() 
 {	
 
 	console.log('[modificarDatoNodo(cy, "C1025","name", "PyE")]');
-	modificarDatoNodo("C1025","name", "PyE");
-	console.log(obtenerDatosNodo("C1025"));
+	modificarDatoNodo(cy, "C1025","name", "PyE");
+	console.log(obtenerDatosNodo(cy, "C1025"));
 
 	console.log('[obtenerDatosArista("C1020","G1001")]');
-	var datosArista = obtenerDatosArista("C1020","G1001");
+	var datosArista = obtenerDatosArista(cy, "C1020","G1001");
 	console.log(datosArista);
 
 	console.log('[obtenerDatosAristasAdyacentes("C1020")]');
-	var aristasAdyacentes = obtenerDatosAristasAdyacentes("C1020");
+	var aristasAdyacentes = obtenerDatosAristasAdyacentes(cy, "C1020");
 	console.log(aristasAdyacentes);
 
 	console.log('[obtenerDatosAristasIncidentes("C1025")]');
-	var aristasIncidentes = obtenerDatosAristasIncidentes("C1025");
+	var aristasIncidentes = obtenerDatosAristasIncidentes(cy, "C1025");
 	console.log(aristasIncidentes);
 
 	console.log('[obtenerDatosNodosRaiz()]');
-	var datosRaices = obtenerDatosNodosRaiz();
+	var datosRaices = obtenerDatosNodosRaiz(cy);
 	console.log(datosRaices);
 
 	console.log('[obtenerPosicionNodo("C1025")]');
-	var posicion = obtenerPosicionNodo("C1025");
+	var posicion = obtenerPosicionNodo(cy, "C1025");
 	console.log(posicion);
 
 	console.log('[modificarPosicionNodo("C1025",0,0)]');
-	modificarPosicionNodo("C1025",200,	200);
-	var posicion = obtenerPosicionNodo("C1025");
+	modificarPosicionNodo(cy, "C1025",200,	200);
+	var posicion = obtenerPosicionNodo(cy, "C1025");
 	console.log(posicion);
 
-	modificarEstiloNodo("C1025","background-color", "red");
-	//modificarEstiloNodo("C1025","visibility", "hidden");
+	modificarEstiloNodo(cy, "C1025","background-color", "red");
+	//modificarEstiloNodo(cy, "C1025","visibility", "hidden");
 
 
 }

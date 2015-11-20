@@ -227,6 +227,13 @@ $grafo = array(
 				"actividad"	=> "GRUPO"
 			),
 		),
+		12 => array(
+			"data" => array(
+				"source" 	=> "C1151", 
+				"target"	=> "C1152",
+				"actividad"	=> "CURSO"
+			),
+		),
 		
 		
 		

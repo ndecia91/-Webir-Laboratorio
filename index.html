@@ -10,6 +10,7 @@
 		<script type="text/javascript" src="js/grafo.js"></script>
 		<script type="text/javascript" src="js/cytoscape.js"></script>
 		<script type="text/javascript" src="js/estilos.js"></script>
+		<script type="text/javascript" src="js/eventos.js"></script>
 		<script type="text/javascript" src="js/cytoscape.min.js"></script>
 	</head>
 
@@ -19,7 +20,6 @@
 					//Obtengo la carrera
 					var carrera = jQuery(".select_carrera").val();
 					obtenerGrafo(carrera);
-					
 				});
 			});
 	</script>
@@ -28,13 +28,6 @@
 		
 				obtenerGrafoDelServidor("7200");
 				test();
-			
-			cy.on('click', 'node', function(event){
-				var node = event.cyTarget;
-				//obtengo idNodo
-				var idNodo = node.id();
-				console.log(idNodo);
-			});
 		});
 	</script>
 	 
