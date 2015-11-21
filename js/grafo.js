@@ -98,6 +98,25 @@ function obtenerDatosAristasAdyacentes(cy, idNodo)
 	return datos;
 }
 
+function obtenerDatosNodosAdyacentes(cy, idNodo)
+{
+
+	var selector = '#' + idNodo;
+	var nodo = cy.nodes(selector);
+	var adyacentes = nodo.outgoers(
+		function() { 
+  			return this.isNode();
+		}
+	);
+	var datos = [];
+	adyacentes.forEach(
+		function (ele, i) {
+			datos.push(ele.data());
+		}
+	);
+	return datos;
+}
+
 
 function obtenerDatosAristasIncidentes(cy, idNodo)
 {
@@ -141,7 +160,8 @@ function construirGrafoReducido(cy){
 		container: document.getElementById('cy'),
 		boxSelectionEnabled: false,
 		autounselectify: true,
-		layout: { name: 'grid' }, //fit: false, //name: 'preset', 
+		layout: { name: 'grid' }, //fit: false, //name: 'preset',
+		
 		style: [ {selector: 'node', style: estilosNodos },
 				 { selector: 'edge', style: estilosAristas }
 		],
@@ -149,25 +169,59 @@ function construirGrafoReducido(cy){
 	});
 	
 	cargarEventos();
+	inicializarGrafo(cyr);
 }
 
+function inicializarGrafo(grafo){
+	//Marco cursos raices como visibles, en color rojo y en estado habilitado
+	var nodosRaiz = obtenerDatosNodosRaiz(grafo);
+	nodosRaiz.forEach(function (nodo, i){
+		modificarEstiloNodo(grafo, nodo.id, 'background-color', '#e60000');
+		modificarEstiloNodo(grafo, nodo.id, 'visibility', 'visible');
+		modificarDatoNodo(grafo, nodo.id, 'estado', 'HABILITADO');
+	})
+}
 function obtenerGrafoReducido(cy){
+	
 	var datosNodosCurso = obtenerDatosNodosTipoCurso(cy);
 	
+	//Agrego nodos tipo curso
 	var grafo = [];
 	datosNodosCurso.forEach(
 		function(nodo, i){
-			grafo.push({data: { id: nodo.id, name: nodo.name, estado: 'inhabilitado'}});
+			grafo.push({data: { id: nodo.id, name: nodo.name, estado: 'INHABILITADO'}});
 		}
 	);
 	
-	var datos = obtenerDatosNodosRaiz(cy);
-	
-	for (i = 0; i < datos.length; i++) { 
-		agregarAristas(cy, grafo, datos[i].id);
-	}
-	
+	//Agrego aristas
+	datosNodosCurso.forEach(function (nodo, i){
+		var cursosAdyacentes = obtenerDatosCursosAdyacentes(cy, nodo.id);
+		cursosAdyacentes.forEach(function (adyacente, i){
+			grafo.push({data: {source: nodo.id, target: adyacente.id}});
+		});
+	});
+	console.log(grafo);
 	return grafo;
+}
+
+function obtenerDatosCursosAdyacentes(cy, idNodo){
+	
+	var cursosAdyacentes = [];
+	var nodosAdyacentes = obtenerDatosNodosAdyacentes(cy, idNodo);
+	nodosAdyacentes.forEach(function(nodo, i){
+		if(nodo.tipo == "CURSO"){
+			cursosAdyacentes.push(nodo);
+		}else{
+			var datos = obtenerDatosNodosAdyacentes(cy, nodo.id);
+			
+			cursosAdyacentes = cursosAdyacentes.concat(datos);
+	
+		}
+	});
+
+		
+	return cursosAdyacentes;
+	
 }
 
 function obtenerDatosNodosTipoCurso(cy){
@@ -184,27 +238,26 @@ function obtenerDatosNodosTipoCurso(cy){
 	return datos;
 }
 
-function agregarAristas(cy, grafo, idNodo){
-	//Obtengo hijos del nodo
-	var adyacentes = obtenerDatosAristasAdyacentes(cy, idNodo);
-	adyacentes.forEach(function(arista, i){
-		var nodoHijo = obtenerDatosNodo(cy, arista.target);
-		var tipoNodo = nodoHijo.tipo;
-		var nodosAdyacentes = [];
-		if(tipoNodo == "CURSO"){
-			nodosAdyacentes.push(nodoHijo);
-		else{
-			
-		}
-			//agrego arista
-			grafo.push({data: { source: idNodo, target: nodoHijo.id}});
-			agregarAristas(cy, grafo, nodoHijo.id);
-		}else{
-			agregarAristas(cy, grafo,)
-		}
-	});
+function actualizarGrafo(idNodo){
+	actualizarEstadoNodo(idNodo);
+	
 }
 
+function actualizarEstadoNodo(idNodo){
+	//Obtengo datos del nodo
+	var datosNodo = obtenerDatosNodo(cyr, idNodo);
+	var estado = datosNodo.estado;
+	if(estado == "HABILITADO"){
+		modificarDatoNodo(cyr, idNodo, 'estado', 'APROBADO');
+		modificarEstiloNodo(cyr, idNodo, 'background-color', '#ff9900');
+	}else if(estado == "APROBADO"){
+		modificarDatoNodo(cyr, idNodo, 'estado', 'EXONERADO');
+		modificarEstiloNodo(cyr, idNodo, 'background-color', '#008000');
+	}else{
+		modificarDatoNodo(cyr, idNodo, 'estado', 'HABILITADO');
+		modificarEstiloNodo(cyr, idNodo, 'background-color', '#e60000');
+	}
+}
 function test() 
 {	
 

@@ -6,12 +6,13 @@ var estilosNodos =
 	'shape':'roundrectangle',
 	'width':'label',
 	'height':'label',
-	'background-color': 'green',
 	'color':'white',
 	'padding-left' : '5',
 	'padding-right' : '5',
 	'padding-bottom' : '5',
 	'padding-top' : '5',
+	'visibility': 'hidden',
+	'cursor' : 'pointer'
 }
 
 var estilosAristas = 

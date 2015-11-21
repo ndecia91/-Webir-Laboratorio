@@ -1,0 +1,73 @@
+$grafo = array(
+
+	//Nodos 
+	"nodes" => array(
+	
+		//Nodos del tipo CURSO
+		0 => array(
+			"data" => array(
+				"id" 		=> "CIdCurso",  //no olvidarse de la C antes del idCurso!
+				"name"		=> "NombreCurso",
+				"tipo"		=> "CURSO",
+				"semestre"	=> "nroSemestre",
+				"creditos"	=> "cantidadCreditos",
+				"validez"	=> "cantidadMeses",
+				"aprobacion"=> "porcentajeAprobacion"
+			),
+		),
+		
+		//Nodos del tipo GRUPO
+		1 =>  array(
+			"data" => array(
+				"id" 	=> "GIdGrupo", 	//no olvidarse de la G antes del idGrupo!
+				"name"		=> "nombreGrupo",
+				"tipo"		=> "GRUPO",
+				"min"		=> "min",
+				"maximo"	=> "max"
+			),
+		),
+		.
+		.
+		.
+		N => ...
+	),
+	
+	//Aristas
+	"edges"	=> array(
+	
+		//Arista CURSO -> GRUPO
+		0 => array(
+			"data" => array(
+				"source" 	=> "CIdCurso", 
+				"target"	=> "GIdGrupo",
+				"puntaje"	=> "puntaje",	//El puntaje que aporta el curso al grupo
+				"actividadPrevia" => "CURSO" | "EXAMEN", 
+			),
+		),
+		
+		//Arista GRUPO -> CURSO 
+		1 => array(
+			"data" => array(
+				"source" 	=> "GIdGrupo", 
+				"target"	=> "CIdCurso",
+				"actividadPrevia" => "GRUPO",
+				"actividad"	=> "CURSO" | "EXAMEN", //Indica si el grupo habilita a rendir el 
+												   //curso o examen del CIdCurso
+			),
+		),
+		//Arista CURSO -> CURSO 
+		2 => array(
+			"data" => array(
+				"source" 	=> "CIdCurso1", 
+				"target"	=> "CIdCurso2",
+				"actividadPrevia" =>  "CURSO" | "EXAMEN",
+				"actividad"	=> "CURSO" | "EXAMEN" //Indica si el grupo habilita a rendir el 
+												  //curso o examen del CIdCurso2
+			),
+		),
+		.
+		.
+		.
+		N => ...
+	)
+);

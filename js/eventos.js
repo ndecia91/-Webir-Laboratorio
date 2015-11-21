@@ -3,6 +3,7 @@ function cargarEventos(){
 		var node = event.cyTarget;
 		//obtengo idNodo
 		var idNodo = node.id();
+		actualizarGrafo(idNodo);
 		
 	});
 }

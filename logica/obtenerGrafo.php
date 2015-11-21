@@ -126,6 +126,15 @@ $grafo = array(
 				"aprobacion"=> "54,8"
 			),
 		),
+		12 => array(
+			"data" => array(
+				"id" 	=> "G1020E", 
+				"name"		=> "CALCULO1 SEM O ANUAL",
+				"tipo"		=> "GRUPO",
+				"min"		=> "1",
+				"maximo"	=> "1"
+			),
+		),
 	),
 	
 	"edges"	=> array(
@@ -134,7 +143,7 @@ $grafo = array(
 				"source" 	=> "C1020", 
 				"target"	=> "GC1020",
 				"puntaje"	=> "1",
-				"actividad"	=> "CURSO"
+				"actividadPrevia"	=> "CURSO",
 			),
 		),
 		1 => array(
@@ -142,7 +151,7 @@ $grafo = array(
 				"source" 	=> "C1052", 
 				"target"	=> "GC1020",
 				"puntaje"	=> "1",
-				"actividad"	=> "CURSO"
+				"actividadPrevia"	=> "CURSO"
 			),
 		),
 		2 => array(
@@ -150,27 +159,30 @@ $grafo = array(
 				"source" 	=> "C1030", 
 				"target"	=> "G1002",
 				"puntaje"	=> "1",
-				"actividad"	=> "EXAMEN"
+				"actividadPrevia"	=> "EXAMEN"
 			),
 		),
 		3 => array(
 			"data" => array(
 				"source" 	=> "G1002", 
 				"target"	=> "C1025",
-				"actividad"	=> "GRUPO"
+				"actividadPrevia"	=> "GRUPO",
+				"actividad"	=> "CURSO"
 			),
 		),
 		4 => array(
 			"data" => array(
 				"source" 	=> "GC1020", 
 				"target"	=> "C1022",
-				"actividad"	=> "GRUPO"
+				"actividadPrevia"	=> "GRUPO",
+				"actividad"	=> "CURSO"
 			),
 		),
 		5 => array(
 			"data" => array(
 				"source" 	=> "C1022", 
 				"target"	=> "G1001",
+				"actividadPrevia"	=> "CURSO",
 				"actividad"	=> "CURSO"
 			),
 		),
@@ -178,7 +190,8 @@ $grafo = array(
 			"data" => array(
 				"source" 	=> "G1001", 
 				"target"	=> "C1025",
-				"actividad"	=> "GRUPO"
+				"actividadPrevia"	=> "GRUPO",
+				"actividad"	=> "CURSO"
 			),
 		),
 		7 => array(
@@ -186,6 +199,7 @@ $grafo = array(
 				"source" 	=> "C1020", 
 				"target"	=> "G1001",
 				"puntaje"	=> "3",
+				"actividadPrevia"	=> "CURSO",
 				"actividad"	=> "CURSO"
 			),
 		),
@@ -193,7 +207,8 @@ $grafo = array(
 			"data" => array(
 				"source" 	=> "GC1020", 
 				"target"	=> "C1153",
-				"actividad"	=> "GRUPO"
+				"actividadPrevia"	=> "GRUPO",
+				"actividad"	=> "CURSO"
 			),
 		),
 		9 => array(
@@ -201,6 +216,7 @@ $grafo = array(
 				"source" 	=> "C1151", 
 				"target"	=> "GFIS",
 				"puntaje"	=> "1",
+				"actividadPrevia"	=> "CURSO",
 				"actividad"	=> "CURSO"
 			),
 		),
@@ -209,7 +225,8 @@ $grafo = array(
 				"source" 	=> "C1151", 
 				"target"	=> "GFIS",
 				"puntaje"	=> "2",
-				"actividad"	=> "EXAMEN"
+				"actividadPrevia"	=> "EXAMEN",
+				"actividad"	=> "CURSO"
 			),
 		),
 		11 => array(
@@ -217,6 +234,7 @@ $grafo = array(
 				"source" 	=> "C1152", 
 				"target"	=> "GFIS",
 				"puntaje"	=> "1",
+				"actividadPrevia"	=> "CURSO",
 				"actividad"	=> "CURSO"
 			),
 		),
@@ -224,19 +242,26 @@ $grafo = array(
 			"data" => array(
 				"source" 	=> "GFIS", 
 				"target"	=> "C1153",
-				"actividad"	=> "GRUPO"
-			),
-		),
-		12 => array(
-			"data" => array(
-				"source" 	=> "C1151", 
-				"target"	=> "C1152",
+				"actividadPrevia"	=> "GRUPO",
 				"actividad"	=> "CURSO"
 			),
 		),
-		
-		
-		
+		13 => array(
+			"data" => array(
+				"source" 	=> "C1151", 
+				"target"	=> "C1152",
+				"actividadPrevia"	=> "CURSO",
+				"actividad"	=> "CURSO"
+			),
+		),
+		14 => array(
+			"data" => array(
+				"source" 	=> "G1020E", 
+				"target"	=> "C1022",
+				"actividadPrevia"	=> "GRUPO",
+				"actividad"	=> "EXAMEN"
+			),
+		),
 	)
 );
 
