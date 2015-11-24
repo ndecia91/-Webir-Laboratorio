@@ -39,6 +39,7 @@ function modificarDatoNodo(cy, idNodo, atributo, valor)
 
 function obtenerDatosNodo(cy, idNodo)
 {
+
 	var selector = '#' + idNodo ;
 	var nodo = cy.nodes(selector);
 	return nodo.data();
@@ -168,7 +169,7 @@ function construirGrafoReducido(cy){
 		elements: grafo 	
 	});
 	
-	cargarEventos();
+	cargarEventos(cy, cyr);
 	inicializarGrafo(cyr);
 }
 
@@ -238,61 +239,97 @@ function obtenerDatosNodosTipoCurso(cy){
 	return datos;
 }
 
-function actualizarGrafo(idNodo){
-	actualizarEstadoNodo(idNodo);
+function actualizarGrafo(cy, cyr, idNodo){
 	
+	//Actualizo el estado del nodo
+	actualizarEstadoNodo(cyr, idNodo);
+	
+	//Obtengo todos los cursos adyacentes
+	var cursosAdyacentes = obtenerDatosCursosAdyacentes(cy, idNodo);
+	
+	cursosAdyacentes.forEach(function(curso, i){
+		var estadoCurso = obtenerDatosNodo(cyr, curso.id).estado;
+		
+		if (estadoCurso == "INHABILITADO") {
+			var aprobado = cursoAprobado(cy, cyr, curso.id);
+			if(aprobado)
+				actualizarEstadoNodo(cyr, curso.id);
+		}
+			
+	});
 }
 
-function actualizarEstadoNodo(idNodo){
+function actualizarEstadoNodo(cyr, idNodo){
+	
 	//Obtengo datos del nodo
 	var datosNodo = obtenerDatosNodo(cyr, idNodo);
 	var estado = datosNodo.estado;
-	if(estado == "HABILITADO"){
+	
+	if(estado == "INHABILITADO"){
+		modificarDatoNodo(cyr, idNodo, 'estado', 'HABILITADOO');
+		modificarEstiloNodo(cyr, idNodo, 'background-color', '#e60000');
+		modificarEstiloNodo(cyr, idNodo, 'visibility', 'visible');
+	}else if(estado == "HABILITADO"){
 		modificarDatoNodo(cyr, idNodo, 'estado', 'APROBADO');
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#ff9900');
 	}else if(estado == "APROBADO"){
 		modificarDatoNodo(cyr, idNodo, 'estado', 'EXONERADO');
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#008000');
-	}else{
+	}else if(estado == "EXONERADO"){
 		modificarDatoNodo(cyr, idNodo, 'estado', 'HABILITADO');
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#e60000');
 	}
 }
-function test() 
-{	
 
-	console.log('[modificarDatoNodo(cy, "C1025","name", "PyE")]');
-	modificarDatoNodo(cy, "C1025","name", "PyE");
-	console.log(obtenerDatosNodo(cy, "C1025"));
-
-	console.log('[obtenerDatosArista("C1020","G1001")]');
-	var datosArista = obtenerDatosArista(cy, "C1020","G1001");
-	console.log(datosArista);
-
-	console.log('[obtenerDatosAristasAdyacentes("C1020")]');
-	var aristasAdyacentes = obtenerDatosAristasAdyacentes(cy, "C1020");
-	console.log(aristasAdyacentes);
-
-	console.log('[obtenerDatosAristasIncidentes("C1025")]');
-	var aristasIncidentes = obtenerDatosAristasIncidentes(cy, "C1025");
-	console.log(aristasIncidentes);
-
-	console.log('[obtenerDatosNodosRaiz()]');
-	var datosRaices = obtenerDatosNodosRaiz(cy);
-	console.log(datosRaices);
-
-	console.log('[obtenerPosicionNodo("C1025")]');
-	var posicion = obtenerPosicionNodo(cy, "C1025");
-	console.log(posicion);
-
-	console.log('[modificarPosicionNodo("C1025",0,0)]');
-	modificarPosicionNodo(cy, "C1025",200,	200);
-	var posicion = obtenerPosicionNodo(cy, "C1025");
-	console.log(posicion);
-
-	modificarEstiloNodo(cy, "C1025","background-color", "red");
-	//modificarEstiloNodo(cy, "C1025","visibility", "hidden");
-
-
+function cursoAprobado(cy, cyr, idNodo){
+	//Obtengo aristas incidentes
+	var aristasIncidentes = obtenerDatosAristasIncidentes(cy, idNodo);
+	
+	aristasIncidentes.forEach(function(arista, i){
+		//Obtengo nodo padre
+		var idPadre = arista.source;
+		var actividadPreviaArista = arista.actividadPrevia;
+		if(actividadPreviaArista == "GRUPO"){
+			if(!grupoAprobado(cy, cyr, idPadre))
+				return false;
+		}else{
+			var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
+			if (actividadPreviaArista == "CURSO" && 
+				(!estadoNodoPadre == "INHABILITADO"))
+				return false;
+			if (actividadPreviaArista == "EXAMEN" && 
+				(estadoNodoPadre != "EXONERADO"))
+				return false;
+		}
+	});
+	
+	return true;
 }
+
+function grupoAprobado(cy, cyr, idNodo){
+	
+	//Obtengo aristas incidentes
+	var aristasIncidentes = obtenerDatosAristasIncidentes(cy, idNodo);
+	
+	var minGrupo = parseInt(obtenerDatosNodo(cy,idNodo).min);
+	var min = 0;
+	aristasIncidentes.forEach(function(arista, i){
+		//Obtengo nodo padre
+		var idPadre = arista.source;
+		var actividadPreviaArista = arista.actividadPrevia;
+		var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
+		if (actividadPreviaArista == "EXAMEN" && 
+				estadoNodoPadre == "EXONERADO" )
+			min+= parseInt(arista.puntaje);
+		
+		if (actividadPreviaArista == "CURSO" && 
+				(estadoNodoPadre == "EXONERADO" ||
+					estadoNodoPadre == "CURSO"))
+			min+= parseInt(arista.puntaje);
+		
+	});
+	
+	return (min >= minGrupo);
+}
+
 
