@@ -7,30 +7,31 @@
 */
 
 include ('../persistencia/conexion.php');
+include ('../persistencia/persistencia_previas.php');
+include_once ('../scrapping/obtener_grupo.php');
+
 require_once 'lib/goutte.phar';
 use Goutte\Client;
 
+
 function obtener_previas($idCarrera){
+	echo 'holaa';
 	try {
 		$client = new Client();
 
 		$previaDeCurso;
-
 		//Abro conexion
 		$bd = conectar();
-
 		if($bd != null){
 			$bd->autocommit(false);
-			
 			$bd->begin_transaction();
-			
 			$cursos= $bd->query("SELECT * FROM curso_carrera WHERE idCarrera = '$idCarrera'");
-			
+			echo '<br> num_rows: ' . $cursos->num_rows . '<br>';
 			if($cursos != false and $cursos->num_rows != 0 ){
 				while($row = $cursos->fetch_assoc()) {
 					$idCurso= $row["idCurso"];
 					echo "----------------------------idCurso: " . $idCurso . "<br>";
-					obtenerPreviasCurso($idCarrera,$idCurso);
+					obtenerPreviasCurso($idCarrera,$idCurso,$client);
 				}
 			}
 
@@ -48,15 +49,13 @@ function obtener_previas($idCarrera){
 /*----------FUNCTIONS--------------*/
 
 
-function obtenerPreviasCurso($idCarrera,$idCurso) {
+function obtenerPreviasCurso($idCarrera,$idCurso,$client) {
 	//Formulario con las materias
-	$crawler = $GLOBALS['client']->request('GET', 'http://www1.bedelias.edu.uy/ingenieria/muestra_prev.imprime?carrera=' . $idCarrera . '&cicl=0&p_mat=' . $idCurso);
-
+	//$crawler = $GLOBALS['client']->request('GET', 'http://www1.bedelias.edu.uy/ingenieria/muestra_prev.imprime?carrera=' . $idCarrera . '&cicl=0&p_mat=' . $idCurso);
+	$crawler = $client->request('GET', 'http://www1.bedelias.edu.uy/ingenieria/muestra_prev.imprime?carrera=72&cicl=0&p_mat=' . $idCurso);
+	
 	$tabla = $crawler->filter('table table')->eq(0);
-	$filas = $tabla->filter('tr')->each(function($fila,$index) {
-
-		global $idCarrera, $idCurso;
-		$descarto= false;
+	$filas = $tabla->filter('tr')->each(function($fila,$index) use($idCarrera,$idCurso) {
 		
 		if($index > 0){
 			echo "LINEA: " . $index . "<br>";
@@ -73,7 +72,7 @@ function obtenerPreviasCurso($idCarrera,$idCurso) {
 				//echo "PREVIA: " . $previa . "<br>";
 
 				$nombre= trim($fila->filter('td')->eq(2)->text());
-				//echo "NOMBRE: " . $nombre . "<br>";
+				echo "NOMBRE: " . $nombre . "<br>";
 
 				$actPrevia= trim($fila->filter('td')->eq(3)->text());
 				//echo "ACT PREVIA: " . $actPrevia . "<br>";
@@ -83,32 +82,38 @@ function obtenerPreviasCurso($idCarrera,$idCurso) {
 			
 				//Procesar datos
 				
-				if ($obs=='(*)' || $actPrevia=='Grupo') {
-					echo "descarto (* o grupo)";
-					$descarto= true;
-				}
-				
+				//Es previa del Curso o del Examen
 				if ($actividad=='Curso') {
 					$GLOBALS['previaDeCurso']= true;
 				} elseif ($actividad=='Examen') {
 					$GLOBALS['previaDeCurso']= false;
-				}
-				
+				}				
 				if ($GLOBALS['previaDeCurso']) {
 					$actividad= 'curso';
 				} else {
 					$actividad= 'examen';
 				}
-
-				if ($actPrevia=='Curso aprobado') {
-					$actPrevia= 'curso';
-				} elseif ($actPrevia=='Curso aprobado') {
-					$actPrevia= 'examen';
-				}			
 				
-				if ($descarto===false) {
-					guardarPrevia($idCarrera,$idCurso,$previa,$actividad,$actPrevia);
-				}
+				if ($obs=='(*)') {
+					echo "descarto (*)";
+				} else {
+					if ($actPrevia=='Grupo') {
+						//La previa es un Grupo
+						$url= $fila->filter('td')->eq(2)->filter('a')->eq(0)->attr('href');
+						$url= 'http://www1.bedelias.edu.uy' . $url;
+						echo $url;
+						obtener_grupo($url);
+						guardarPreviaGrupo($idCarrera,$idCurso,$previa,$actividad);
+					} else {
+						//La previa es un Curso aprobado o un Examen aprobado
+						if ($actPrevia=='Curso aprobado') {
+							$actPrevia= 'curso';
+						} elseif ($actPrevia=='Curso aprobado') {
+							$actPrevia= 'examen';
+						}			
+						guardarPreviaCurso($idCarrera,$idCurso,$previa,$actividad,$actPrevia);
+					}
+				}		
 			} elseif ($cantColumnas==3) {
 				echo "MINIMO CREDITOS <br>";
 				
@@ -130,27 +135,7 @@ function obtenerPreviasCurso($idCarrera,$idCurso) {
 	});
 }//end function obtenerPreviasCurso
 
-function guardarPrevia($idCarrera,$idCurso,$idPrevia,$actividad,$actividadPrevia){
-	
-	echo "guardarPrevia <br>";
-	
-	$GLOBALS['bd']->begin_transaction();
-	
-	$consultas = true;
-	
-	//Si la consulta es incorrecta => $consultas = false.
-	$GLOBALS['bd']->query("INSERT INTO previas_cursos (idCarrera,idCurso,idPrevia,actividad,actividadPrevia) VALUES ('$idCarrera','$idCurso','$idPrevia','$actividad','$actividadPrevia');") ? null : $consultas=false;		
-	
-	//Si $consultas TRUE => COMMIT sino ROLLBACK
-	if($consultas){
-		$GLOBALS['bd']->commit();
-		echo("commit");
-	} else {
-		$GLOBALS['bd']->rollback();
-		echo("rollback");
-	}
 
-}//end function guardarPrevia
- 
- 
+obtener_previas('7200');
+
 ?>
