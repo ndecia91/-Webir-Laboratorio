@@ -252,9 +252,11 @@ function actualizarGrafo(cy, cyr, idNodo){
 		
 		if (estadoCurso == "INHABILITADO") {
 			var aprobado = cursoAprobado(cy, cyr, curso.id);
+			
 			if(aprobado)
 				actualizarEstadoNodo(cyr, curso.id);
-		}
+			
+		}	
 			
 	});
 }
@@ -266,7 +268,7 @@ function actualizarEstadoNodo(cyr, idNodo){
 	var estado = datosNodo.estado;
 	
 	if(estado == "INHABILITADO"){
-		modificarDatoNodo(cyr, idNodo, 'estado', 'HABILITADOO');
+		modificarDatoNodo(cyr, idNodo, 'estado', 'HABILITADO');
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#e60000');
 		modificarEstiloNodo(cyr, idNodo, 'visibility', 'visible');
 	}else if(estado == "HABILITADO"){
@@ -284,8 +286,25 @@ function actualizarEstadoNodo(cyr, idNodo){
 function cursoAprobado(cy, cyr, idNodo){
 	//Obtengo aristas incidentes
 	var aristasIncidentes = obtenerDatosAristasIncidentes(cy, idNodo);
-	
-	aristasIncidentes.forEach(function(arista, i){
+	for (arista of aristasIncidentes) {
+		//Obtengo nodo padre
+		
+		var idPadre = arista.source;
+		var actividadPreviaArista = arista.actividadPrevia;
+		if(actividadPreviaArista == "GRUPO"){
+			if(!grupoAprobado(cy, cyr, idPadre))
+				return false;
+		}else{
+			var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
+			if (actividadPreviaArista == "CURSO" && 
+				(!estadoNodoPadre == "INHABILITADO"))
+				return false;
+			if (actividadPreviaArista == "EXAMEN" && 
+				(estadoNodoPadre != "EXONERADO"))
+				return false;
+		}
+	}
+	/*aristasIncidentes.forEach(function(arista, i){
 		//Obtengo nodo padre
 		var idPadre = arista.source;
 		var actividadPreviaArista = arista.actividadPrevia;
@@ -301,7 +320,7 @@ function cursoAprobado(cy, cyr, idNodo){
 				(estadoNodoPadre != "EXONERADO"))
 				return false;
 		}
-	});
+	});*/
 	
 	return true;
 }
@@ -312,6 +331,7 @@ function grupoAprobado(cy, cyr, idNodo){
 	var aristasIncidentes = obtenerDatosAristasIncidentes(cy, idNodo);
 	
 	var minGrupo = parseInt(obtenerDatosNodo(cy,idNodo).min);
+	
 	var min = 0;
 	aristasIncidentes.forEach(function(arista, i){
 		//Obtengo nodo padre
@@ -324,10 +344,12 @@ function grupoAprobado(cy, cyr, idNodo){
 		
 		if (actividadPreviaArista == "CURSO" && 
 				(estadoNodoPadre == "EXONERADO" ||
-					estadoNodoPadre == "CURSO"))
+					estadoNodoPadre == "APROBADO"))
 			min+= parseInt(arista.puntaje);
 		
 	});
+	console.log(idNodo);
+	console.log(min);
 	
 	return (min >= minGrupo);
 }
