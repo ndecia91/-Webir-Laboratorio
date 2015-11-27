@@ -56,6 +56,14 @@ function modificarEstiloNodo(cy, idNodo, atributo, valor)
 
 }
 
+function modificarEstiloArista(cy, arista, atributo, valor)
+{
+
+	var nodo = cy.nodes(selector);
+	return nodo.style(atributo, valor);
+
+}
+
 function obtenerPosicionNodo(cy, idNodo)
 {
 	var selector = '#' + idNodo ;
@@ -196,9 +204,22 @@ function obtenerGrafoReducido(cy){
 	
 	//Agrego aristas
 	datosNodosCurso.forEach(function (nodo, i){
-		var cursosAdyacentes = obtenerDatosCursosAdyacentes(cy, nodo.id);
-		cursosAdyacentes.forEach(function (adyacente, i){
-			grafo.push({data: {source: nodo.id, target: adyacente.id}});
+		var aristasAdyacentes = obtenerDatosAristasAdyacentes(cy, nodo.id);
+		aristasAdyacentes.forEach(function(arista, i){
+			var nodoAdyacente = obtenerDatosNodo(cy, arista.target);
+			var estilos = arista.actividadPrevia == "CURSO" ? estilosAristaCurso : estilosAristaExamen;
+			if(nodoAdyacente.tipo == "CURSO"){
+				if(arista.actividad == "CURSO")
+					grafo.push({data: {source: nodo.id, target: nodoAdyacente.id}, style: estilos})
+			}else{//GRUPO
+				var puntaje = arista.puntaje;
+				var aristasAdyacentes = obtenerDatosAristasAdyacentes(cy, nodoAdyacente.id);
+				aristasAdyacentes.forEach(function(arista, i){
+					if(arista.actividad == "CURSO")
+						grafo.push({data: {source: nodo.id, target: arista.target, label: puntaje}, style: estilos});
+				});
+			}
+				
 		});
 	});
 	console.log(grafo);
