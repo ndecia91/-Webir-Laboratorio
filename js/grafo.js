@@ -1,4 +1,3 @@
-
 var cy;
 var cyr;
 
@@ -174,7 +173,7 @@ function construirGrafoReducido(cy){
 		style: [ {selector: 'node', style: estilosNodos },
 				 { selector: 'edge', style: estilosAristas }
 		],
-		elements: grafo 	
+		elements: grafo,
 	});
 	
 	cargarEventos(cy, cyr);
@@ -190,6 +189,8 @@ function inicializarGrafo(grafo){
 		modificarDatoNodo(grafo, nodo.id, 'estado', 'HABILITADO');
 	})
 }
+
+/*
 function obtenerGrafoReducido(cy){
 	
 	var datosNodosCurso = obtenerDatosNodosTipoCurso(cy);
@@ -205,24 +206,76 @@ function obtenerGrafoReducido(cy){
 	//Agrego aristas
 	datosNodosCurso.forEach(function (nodo, i){
 		var aristasAdyacentes = obtenerDatosAristasAdyacentes(cy, nodo.id);
-		aristasAdyacentes.forEach(function(arista, i){
+		aristasAdyacentes.forEach(function(arista, i) {
 			var nodoAdyacente = obtenerDatosNodo(cy, arista.target);
 			var estilos = arista.actividadPrevia == "CURSO" ? estilosAristaCurso : estilosAristaExamen;
+			var indiceColor = Math.round(10 * Math.random()) % colores.length;
 			if(nodoAdyacente.tipo == "CURSO"){
 				if(arista.actividad == "CURSO")
 					grafo.push({data: {source: nodo.id, target: nodoAdyacente.id}, style: estilos})
 			}else{//GRUPO
+				estilos['text-background-color'] = colores[indiceColor];
+				indiceColor = (indiceColor + 1) % colores.length;
 				var puntaje = arista.puntaje;
+				var minimo 	= obtenerDatosNodo(cy, arista.target).min;
+				var label = puntaje + "/" + minimo;
 				var aristasAdyacentes = obtenerDatosAristasAdyacentes(cy, nodoAdyacente.id);
 				aristasAdyacentes.forEach(function(arista, i){
 					if(arista.actividad == "CURSO")
-						grafo.push({data: {source: nodo.id, target: arista.target, label: puntaje}, style: estilos});
+						grafo.push({data: {source: nodo.id, target: arista.target, label: label}, style: estilos});
 				});
 			}
 				
 		});
 	});
 	console.log(grafo);
+	return grafo;
+} */
+
+function obtenerGrafoReducido(cy){
+	
+	var datosNodosCurso = obtenerDatosNodosTipoCurso(cy);
+	
+	//Agrego nodos tipo curso
+	var grafo = [];
+	datosNodosCurso.forEach(
+		function(nodo, i){
+			grafo.push({data: { id: nodo.id, name: nodo.name, estado:'INHABILITADO'}});
+		}
+	);
+	
+	//Agrego aristas
+	datosNodosCurso.forEach(function (nodo, i){
+		var aristasIncidentes = obtenerDatosAristasIncidentes(cy, nodo.id);
+		var indiceColor = 0;//Math.round(10 * Math.random()) % colores.length;
+		aristasIncidentes.forEach(function(arista, i) {
+			var nodoIncidente = obtenerDatosNodo(cy, arista.source);
+			if (arista.actividad == "CURSO") {
+				if(nodoIncidente.tipo == "CURSO") {
+					var estilos = arista.actividadPrevia == "CURSO" ? estilosAristaCurso : estilosAristaExamen;
+					grafo.push({data: {source: nodoIncidente.id, target: nodo.id}, style: estilos})
+				} else {//GRUPO
+					var minimo 	= nodoIncidente.min;
+					var aristasIncidentes = obtenerDatosAristasIncidentes(cy, nodoIncidente.id);
+					var sumatoriaPuntajeCursosGrupo = 0;
+					aristasIncidentes.forEach(function(arista, i) {
+							sumatoriaPuntajeCursosGrupo += parseInt(arista.puntaje);
+					});
+					aristasIncidentes.forEach(function(arista, i) {
+						var puntaje = arista.puntaje;
+						var label = null;
+						if ((sumatoriaPuntajeCursosGrupo) != minimo) 
+							label = puntaje + "/" + minimo;
+						var estilos = Object.assign(
+							{'text-background-color':colores[indiceColor]},
+							arista.actividadPrevia == "CURSO" ? estilosAristaCurso : estilosAristaExamen);
+						grafo.push({data: {source: arista.source, target: nodo.id, label: label}, style: estilos});
+					});
+				}
+				indiceColor = (indiceColor + 1) % colores.length;	
+			}
+		});
+	});
 	return grafo;
 }
 
@@ -373,6 +426,25 @@ function grupoAprobado(cy, cyr, idNodo){
 	console.log(min);
 	
 	return (min >= minGrupo);
+}
+
+function mostrarDatosCurso(cy,cyr,idNodo)
+{
+	console.log("dd");
+	var selector = '#' + idNodo;
+	cyr.$(selector).qtip({
+  content: {text:'Hello como estas vos\nddddddddddddddd!',
+  title:'ddd'
+	},
+  position: {
+  	    my: 'top center',
+    	at: 'bottom center'
+  },
+  style: {
+    classes: 'qtip-light qtip-rounded qtip-shadow',
+  }
+  
+});
 }
 
 
