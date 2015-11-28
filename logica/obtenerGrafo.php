@@ -150,12 +150,21 @@ $grafo = array(
 				"tipo"		=> "CURSO",
 				"semestre"	=> "2",
 				"creditos"	=> "10",
-				"validez"	=> "20",
+				"validez"	=> "999",
 				"nota_promedio"=> "30,5",
 				"total_cursantes"=> "30,5",
 				"aprobados"=> "30,5",
 				"exonerados" => "23",
 				"porcentaje_aprobacion" => "41,3"
+			),
+		),
+		12 => array(
+			"data" => array(
+				"id" 	=> "G1020E", 
+				"name"		=> "CALCULO 1 SEM. O ANUAL",
+				"tipo"		=> "GRUPO",
+				"min"		=> "1",
+				"maximo"	=> "1"
 			),
 		),
 	),
@@ -273,14 +282,22 @@ $grafo = array(
 				"actividad"	=> "CURSO"
 			),
 		),
-		/*14 => array(
+		14 => array(
 			"data" => array(
 				"source" 	=> "G1020E", 
 				"target"	=> "C1022",
 				"actividadPrevia"	=> "GRUPO",
 				"actividad"	=> "EXAMEN"
 			),
-		),*/
+		),
+		15 => array(
+			"data" => array(
+				"source" 	=> "C1020", 
+				"target"	=> "G1020E",
+				"puntaje"	=> "1",
+				"actividadPrevia"	=> "EXAMEN",
+			),
+		),
 	)
 );
 

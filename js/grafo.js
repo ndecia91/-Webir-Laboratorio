@@ -315,8 +315,21 @@ function obtenerDatosNodosTipoCurso(cy){
 
 function actualizarGrafo(cy, cyr, idNodo){
 	
-	//Actualizo el estado del nodo
-	actualizarEstadoNodo(cyr, idNodo);
+	//Obtengo estado del nodo
+	var estadoNodo = obtenerDatosNodo(cyr, idNodo).estado;
+	
+	if(estadoNodo == "HABILITADO"){
+		//Actualizo el estado del nodo
+		actualizarEstadoNodo(cyr, idNodo);
+	}else if(estadoNodo == "APROBADO"){
+		//Curso exonerado
+		//Verifico que cumple con las previas del examen
+		var exonerado = cursoExonerado(cy, cyr, idNodo);
+		if(!exonerado)
+			return;
+		actualizarEstadoNodo(cyr, idNodo);
+	}
+	
 	
 	//Obtengo todos los cursos adyacentes
 	var cursosAdyacentes = obtenerDatosCursosAdyacentes(cy, idNodo);
@@ -329,9 +342,7 @@ function actualizarGrafo(cy, cyr, idNodo){
 			
 			if(aprobado)
 				actualizarEstadoNodo(cyr, curso.id);
-			
-		}	
-			
+		}		
 	});
 }
 
@@ -362,39 +373,52 @@ function cursoAprobado(cy, cyr, idNodo){
 	var aristasIncidentes = obtenerDatosAristasIncidentes(cy, idNodo);
 	for (arista of aristasIncidentes) {
 		//Obtengo nodo padre
-		
-		var idPadre = arista.source;
-		var actividadPreviaArista = arista.actividadPrevia;
-		if(actividadPreviaArista == "GRUPO"){
-			if(!grupoAprobado(cy, cyr, idPadre))
-				return false;
-		}else{
-			var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
-			if (actividadPreviaArista == "CURSO" && 
-				(!estadoNodoPadre == "INHABILITADO"))
-				return false;
-			if (actividadPreviaArista == "EXAMEN" && 
-				(estadoNodoPadre != "EXONERADO"))
-				return false;
+		var actividad = arista.actividad;
+		if(actividad == "CURSO"){
+			var idPadre = arista.source;
+			var actividadPreviaArista = arista.actividadPrevia;
+			if(actividadPreviaArista == "GRUPO"){
+				if(!grupoAprobado(cy, cyr, idPadre))
+					return false;
+			}else{
+				var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
+				if (actividadPreviaArista == "CURSO" && 
+					(!estadoNodoPadre == "INHABILITADO"))
+					return false;
+				if (actividadPreviaArista == "EXAMEN" && 
+					(estadoNodoPadre != "EXONERADO"))
+					return false;
+			}
 		}
 	}
-	/*aristasIncidentes.forEach(function(arista, i){
+	
+	return true;
+}
+
+function cursoExonerado(cy, cyr, idNodo){
+	//Obtengo aristas incidentes
+	var aristasIncidentes = obtenerDatosAristasIncidentes(cy, idNodo);
+	for (arista of aristasIncidentes) {
 		//Obtengo nodo padre
-		var idPadre = arista.source;
-		var actividadPreviaArista = arista.actividadPrevia;
-		if(actividadPreviaArista == "GRUPO"){
-			if(!grupoAprobado(cy, cyr, idPadre))
-				return false;
-		}else{
-			var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
-			if (actividadPreviaArista == "CURSO" && 
-				(!estadoNodoPadre == "INHABILITADO"))
-				return false;
-			if (actividadPreviaArista == "EXAMEN" && 
-				(estadoNodoPadre != "EXONERADO"))
-				return false;
+		var actividad = arista.actividad;
+		if(actividad == "EXAMEN"){
+			var idPadre = arista.source;
+			var actividadPreviaArista = arista.actividadPrevia;
+			if(actividadPreviaArista == "GRUPO"){
+				if(!grupoAprobado(cy, cyr, idPadre))
+					return false;
+			}else{
+				var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
+				if (actividadPreviaArista == "CURSO" && 
+					(!estadoNodoPadre == "INHABILITADO"))
+					return false;
+				if (actividadPreviaArista == "EXAMEN" && 
+					(estadoNodoPadre != "EXONERADO"))
+					return false;
+			}
 		}
-	});*/
+		
+	}
 	
 	return true;
 }
