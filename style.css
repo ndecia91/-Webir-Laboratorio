@@ -11,6 +11,6 @@ body {
 	top: 0;
 	z-index: 999;
 }
-.qtip-light{
-    max-width: 5px;
+.personalizado{
+    width: 3000px;
 }

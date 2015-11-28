@@ -430,20 +430,34 @@ function grupoAprobado(cy, cyr, idNodo){
 
 function mostrarDatosCurso(cy,cyr,idNodo)
 {
-	console.log("dd");
 	var selector = '#' + idNodo;
+	var datos = obtenerDatosNodo(cy, idNodo);
+	console.log(datos);
 	cyr.$(selector).qtip({
-  content: {text:'Hello como estas vos\nddddddddddddddd!',
-  title:'ddd'
-	},
-  position: {
-  	    my: 'top center',
-    	at: 'bottom center'
-  },
-  style: {
-    classes: 'qtip-light qtip-rounded qtip-shadow',
-  }
-  
+		content: {text: '<strong>Créditos: </strong>'+ datos.creditos +
+						'<br><strong>Validez: </strong>'+ (datos.validez == "999" ? 'N/A' : datos.validez)  +
+						'<br><strong>Nota Promedio: </strong>'+ datos.nota_promedio +
+						'<br><strong>Inscriptos: </strong>'+ datos.total_cursantes +
+						'<br><strong>Aprobados: </strong>'+ datos.aprobados +
+						'<br><strong>Exonerados: </strong>'+ datos.exonerados +
+						'<br><strong>% Aprobación: </strong>'+ datos.porcentaje_aprobacion,
+				  title:'Información Curso'
+		},
+		position: {
+			my: 'top center',
+			at: 'bottom center'
+		},
+		show: {
+			event: false,
+			ready: true,
+		},
+		hide: {
+			event: 'mouseout'
+		},
+		style: {
+			classes: 'qtip-blue qtip-rounded qtip-shadow', 
+			max_width: 30,
+		}
 });
 }
 

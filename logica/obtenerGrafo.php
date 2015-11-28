@@ -10,7 +10,11 @@ $grafo = array(
 				"semestre"	=> "1",
 				"creditos"	=> "16",
 				"validez"	=> "20",
-				"aprobacion"=> "30,5"
+				"nota_promedio"=> "30,5",
+				"total_cursantes"=> "30,5",
+				"aprobados"=> "30,5",
+				"exonerados" => "23",
+				"porcentaje_aprobacion" => "41,3"
 			),
 		),
 		1 => array(
@@ -21,7 +25,11 @@ $grafo = array(
 				"semestre"	=> "1",
 				"creditos"	=> "16",
 				"validez"	=> "20",
-				"aprobacion"=> "40,5"
+				"nota_promedio"=> "",
+				"total_cursantes"=> "",
+				"aprobados"=> "",
+				"exonerados" => "",
+				"porcentaje_aprobacion" => ""
 			),
 		),
 		2 => array(
@@ -32,7 +40,11 @@ $grafo = array(
 				"semestre"	=> "1",
 				"creditos"	=> "9",
 				"validez"	=> "20",
-				"aprobacion"=> "50,5"
+				"nota_promedio"=> "30,5",
+				"total_cursantes"=> "30,5",
+				"aprobados"=> "30,5",
+				"exonerados" => "23",
+				"porcentaje_aprobacion" => "41,3"
 			),
 		),
 		3 => array(
@@ -43,7 +55,11 @@ $grafo = array(
 				"semestre"	=> "2",
 				"creditos"	=> "16",
 				"validez"	=> "20",
-				"aprobacion"=> "30,5"
+				"nota_promedio"=> "30,5",
+				"total_cursantes"=> "30,5",
+				"aprobados"=> "30,5",
+				"exonerados" => "23",
+				"porcentaje_aprobacion" => "41,3"
 			),
 		),
 		4 => array(
@@ -54,7 +70,11 @@ $grafo = array(
 				"semestre"	=> "3",
 				"creditos"	=> "10",
 				"validez"	=> "20",
-				"aprobacion"=> "40,4"
+				"nota_promedio"=> "30,5",
+				"total_cursantes"=> "30,5",
+				"aprobados"=> "30,5",
+				"exonerados" => "23",
+				"porcentaje_aprobacion" => "41,3"
 			),
 		),
 		5 => array(
@@ -92,7 +112,11 @@ $grafo = array(
 				"semestre"	=> "3",
 				"creditos"	=> "10",
 				"validez"	=> "20",
-				"aprobacion"=> "60,4"
+				"nota_promedio"=> "30,5",
+				"total_cursantes"=> "30,5",
+				"aprobados"=> "30,5",
+				"exonerados" => "23",
+				"porcentaje_aprobacion" => "41,3"
 			),
 		),
 		9 => array(
@@ -112,7 +136,11 @@ $grafo = array(
 				"semestre"	=> "1",
 				"creditos"	=> "10",
 				"validez"	=> "20",
-				"aprobacion"=> "62,4"
+				"nota_promedio"=> "30,5",
+				"total_cursantes"=> "30,5",
+				"aprobados"=> "30,5",
+				"exonerados" => "23",
+				"porcentaje_aprobacion" => "41,3"
 			),
 		),
 		11 => array(
@@ -123,18 +151,13 @@ $grafo = array(
 				"semestre"	=> "2",
 				"creditos"	=> "10",
 				"validez"	=> "20",
-				"aprobacion"=> "54,8"
+				"nota_promedio"=> "30,5",
+				"total_cursantes"=> "30,5",
+				"aprobados"=> "30,5",
+				"exonerados" => "23",
+				"porcentaje_aprobacion" => "41,3"
 			),
 		),
-		/*12 => array(
-			"data" => array(
-				"id" 	=> "G1020E", 
-				"name"		=> "CALCULO1 SEM O ANUAL",
-				"tipo"		=> "GRUPO",
-				"min"		=> "1",
-				"maximo"	=> "1"
-			),
-		),*/
 	),
 	
 	"edges"	=> array(
