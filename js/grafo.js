@@ -1,5 +1,6 @@
 var cy;
 var cyr;
+var stack = [];
 
 function obtenerGrafoDelServidor(idCarrera) {
 			
@@ -178,6 +179,7 @@ function construirGrafoReducido(cy){
 	
 	cargarEventos(cy, cyr);
 	inicializarGrafo(cyr);
+	stack.push({style:cyr.style,elements:cyr.elements()});
 }
 
 function inicializarGrafo(grafo){
@@ -316,6 +318,7 @@ function obtenerDatosNodosTipoCurso(cy){
 function actualizarGrafo(cy, cyr, idNodo){
 	
 	//Obtengo estado del nodo
+	var datos 	   = obtenerDatosNodo(cy, idNodo);
 	var estadoNodo = obtenerDatosNodo(cyr, idNodo).estado;
 	
 	if(estadoNodo == "HABILITADO"){
@@ -324,7 +327,11 @@ function actualizarGrafo(cy, cyr, idNodo){
 	}else if(estadoNodo == "APROBADO"){
 		//Curso exonerado
 		//Verifico que cumple con las previas del examen
-		var exonerado = cursoExonerado(cy, cyr, idNodo);
+
+		var exonerado = true;
+		if (datos.exonerable == "No") {
+			exonerado = cursoExonerado(cy, cyr, idNodo);
+		}
 		if(!exonerado)
 			return;
 		actualizarEstadoNodo(cyr, idNodo);
@@ -344,6 +351,22 @@ function actualizarGrafo(cy, cyr, idNodo){
 				actualizarEstadoNodo(cyr, curso.id);
 		}		
 	});
+	
+	stack.push({style:cyr.style,elements:cyr.elements()});
+}
+
+function rollback()
+{
+	var object;
+	if (stack.length > 1) {
+		object = stack.pop();
+	}else{
+		object = stack[0];
+	}
+	console.log(object.elements);
+	cyr.elements = object.elements;
+	cyr.style = object.style;
+	
 }
 
 function actualizarEstadoNodo(cyr, idNodo){
@@ -446,8 +469,7 @@ function grupoAprobado(cy, cyr, idNodo){
 			min+= parseInt(arista.puntaje);
 		
 	});
-	console.log(idNodo);
-	console.log(min);
+	
 	
 	return (min >= minGrupo);
 }
@@ -456,10 +478,11 @@ function mostrarDatosCurso(cy,cyr,idNodo)
 {
 	var selector = '#' + idNodo;
 	var datos = obtenerDatosNodo(cy, idNodo);
-	console.log(datos);
+	
 	cyr.$(selector).qtip({
 		content: {text: '<strong>Créditos: </strong>'+ datos.creditos +
-						'<br><strong>Validez: </strong>'+ (datos.validez == "999" ? 'N/A' : datos.validez)  +
+						'<br><strong>Validez: </strong>'+ (datos.validez == "999" ? 'N/A' : datos.validez + " meses")  +
+						'<br><strong>Exonerable: </strong>'+ datos.exonerable +
 						'<br><strong>Nota Promedio: </strong>'+ datos.nota_promedio +
 						'<br><strong>Inscriptos: </strong>'+ datos.total_cursantes +
 						'<br><strong>Aprobados: </strong>'+ datos.aprobados +

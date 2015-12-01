@@ -16,9 +16,17 @@ function cargarEventos(cy, cyr){
 		//obtengo idNodo
 		var idNodo = node.id();
 
-		mostrarDatosCurso(cy, cyr, idNodo);
+		//mostrarDatosCurso(cy, cyr, idNodo);
 		
 	});
+	
+	jQuery("#cy").on('mousedown', function(e){
+		if( e.button == 2 ) { 
+		  rollback();
+	
+		} 
+
+  }); 
 	
 }
 
