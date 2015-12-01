@@ -48,7 +48,7 @@ function obtener_grafo($idCarrera){
 			echo "Obteniendo Nodos Cursos...<br>";
 			
 			// Obtengo los nodos que son de tipo CURSO que sean de la carrera seleccionada
-			$infoCursos= $bd->query("SELECT c.idCurso, CONVERT(c.nombre USING utf8) as nombre, c.instituto, c.creditos, c.validez, c.nota_promedio, 
+			$infoCursos= $bd->query("SELECT c.idCurso, CONVERT(c.nombre USING utf8) as nombre, c.instituto, c.creditos, c.validez, c.semestre, c.exonerable, c.nota_promedio, 
 									 c.total_cursantes, c.aprobados, c.exonerados, c.porcentaje_aprobacion 
 									 FROM cursos c, curso_carrera cc
 									 WHERE cc.idCarrera = '$idCarrera' AND c.idCurso = cc.idCurso");
@@ -67,8 +67,6 @@ function obtener_grafo($idCarrera){
 					
 					$filaCurso["data"]["tipo"] = "CURSO";
 					
-					$filaCurso["data"]["semestre"] = "1";
-					
 					$instituto = $rowCurso["instituto"];
 					$filaCurso["data"]["instituto"] = $instituto;
 					
@@ -77,6 +75,12 @@ function obtener_grafo($idCarrera){
 					
 					$validez = $rowCurso["validez"];
 					$filaCurso["data"]["validez"] = $validez;
+					
+					$semestre = $rowCurso["semestre"];
+					$filaCurso["data"]["semestre"] = $semestre;
+					
+					$exonerable = $rowCurso["exonerable"];
+					$filaCurso["data"]["exonerable"] = $exonerable;
 					
 					$notaProm = $rowCurso["nota_promedio"];
 					$filaCurso["data"]["nota_promedio"] = $notaProm;
