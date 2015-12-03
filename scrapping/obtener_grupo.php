@@ -32,7 +32,7 @@ function obtener_datos_grupo($crawler){
 			$texto = $node->text();
 			
 			//Extraigo codigo, nombre, minimo, maximo
-			preg_match('/\sGrupo:\s(?<idGrupo>\w+)-(?<nombre>.+)\sPuntaje\smínimo:\s(?<min>\d+).+Puntaje\smáximo:\s(?<max>\d+)/', $texto, $matches);
+			preg_match('/\sGrupo:\s(?<idGrupo>(\w|\s)+)-(?<nombre>.+)\sPuntaje\smínimo:\s(?<min>\d+).+Puntaje\smáximo:\s(?<max>\d+)/', $texto, $matches);
 			
 			$datos_grupo = array(
 				'idGrupo'	=> $matches['idGrupo'],

@@ -1,307 +1,247 @@
 <?php
-
-$grafo = array(
-	"nodes" => array(
-		0 => array(
-			"data" => array(
-				"id" 		=> "C1020", 
-				"name"		=> "Cálculo 1",
-				"tipo"		=> "CURSO",
-				"semestre"	=> "1",
-				"creditos"	=> "16",
-				"validez"	=> "20",
-				"nota_promedio"=> "30,5",
-				"total_cursantes"=> "30,5",
-				"aprobados"=> "30,5",
-				"exonerados" => "23",
-				"porcentaje_aprobacion" => "41,3"
-			),
-		),
-		1 => array(
-			"data" => array(
-				"id" 	=> "C1052", 
-				"name"		=> "Cálculo 1 (Anual)",
-				"tipo"		=> "CURSO",
-				"semestre"	=> "1",
-				"creditos"	=> "16",
-				"validez"	=> "20",
-				"nota_promedio"=> "",
-				"total_cursantes"=> "",
-				"aprobados"=> "",
-				"exonerados" => "",
-				"porcentaje_aprobacion" => ""
-			),
-		),
-		2 => array(
-			"data" => array(
-				"id" 	=> "C1030", 
-				"name"		=> "Geometría y Algebra Lineal 1",
-				"tipo"		=> "CURSO",
-				"semestre"	=> "1",
-				"creditos"	=> "9",
-				"validez"	=> "20",
-				"nota_promedio"=> "30,5",
-				"total_cursantes"=> "30,5",
-				"aprobados"=> "30,5",
-				"exonerados" => "23",
-				"porcentaje_aprobacion" => "41,3"
-			),
-		),
-		3 => array(
-			"data" => array(
-				"id" 	=> "C1022", 
-				"name"		=> "Cálculo 2",
-				"tipo"		=> "CURSO",
-				"semestre"	=> "2",
-				"creditos"	=> "16",
-				"validez"	=> "20",
-				"nota_promedio"=> "30,5",
-				"total_cursantes"=> "30,5",
-				"aprobados"=> "30,5",
-				"exonerados" => "23",
-				"porcentaje_aprobacion" => "41,3"
-			),
-		),
-		4 => array(
-			"data" => array(
-				"id" 	=> "C1025", 
-				"name"		=> "Probabilidad y Estadística",
-				"tipo"		=> "CURSO",
-				"semestre"	=> "3",
-				"creditos"	=> "10",
-				"validez"	=> "20",
-				"nota_promedio"=> "30,5",
-				"total_cursantes"=> "30,5",
-				"aprobados"=> "30,5",
-				"exonerados" => "23",
-				"porcentaje_aprobacion" => "41,3"
-			),
-		),
-		5 => array(
-			"data" => array(
-				"id" 	=> "GC1020", 
-				"name"		=> "Cálculo 1",
-				"tipo"		=> "GRUPO",
-				"min"		=> "1",
-				"maximo"	=> "1"
-			),
-		),
-		6 => array(
-			"data" => array(
-				"id" 	=> "G1002", 
-				"name"		=> "Algebra y geometría",
-				"tipo"		=> "GRUPO",
-				"min"		=> "1",
-				"maximo"	=> "1"
-			),
-		),
-		7 => array(
-			"data" => array(
-				"id" 	=> "G1001", 
-				"name"		=> "Calculos y Análisis",
-				"tipo"		=> "GRUPO",
-				"min"		=> "4",
-				"maximo"	=> "6"
-			),
-		),
-		8 => array(
-			"data" => array(
-				"id" 	=> "C1153", 
-				"name"		=> "Física 3",
-				"tipo"		=> "CURSO",
-				"semestre"	=> "3",
-				"creditos"	=> "10",
-				"validez"	=> "20",
-				"nota_promedio"=> "30,5",
-				"total_cursantes"=> "30,5",
-				"aprobados"=> "30,5",
-				"exonerados" => "23",
-				"porcentaje_aprobacion" => "41,3"
-			),
-		),
-		9 => array(
-			"data" => array(
-				"id" 	=> "GFIS", 
-				"name"		=> "FIS-FISICAS",
-				"tipo"		=> "GRUPO",
-				"min"		=> "2",
-				"maximo"	=> "4"
-			),
-		),
-		10 => array(
-			"data" => array(
-				"id" 	=> "C1151", 
-				"name"		=> "Física 1",
-				"tipo"		=> "CURSO",
-				"semestre"	=> "1",
-				"creditos"	=> "10",
-				"validez"	=> "20",
-				"nota_promedio"=> "30,5",
-				"total_cursantes"=> "30,5",
-				"aprobados"=> "30,5",
-				"exonerados" => "23",
-				"porcentaje_aprobacion" => "41,3"
-			),
-		),
-		11 => array(
-			"data" => array(
-				"id" 	=> "C1152", 
-				"name"		=> "Física 2",
-				"tipo"		=> "CURSO",
-				"semestre"	=> "2",
-				"creditos"	=> "10",
-				"validez"	=> "999",
-				"nota_promedio"=> "30,5",
-				"total_cursantes"=> "30,5",
-				"aprobados"=> "30,5",
-				"exonerados" => "23",
-				"porcentaje_aprobacion" => "41,3"
-			),
-		),
-		12 => array(
-			"data" => array(
-				"id" 	=> "G1020E", 
-				"name"		=> "CALCULO 1 SEM. O ANUAL",
-				"tipo"		=> "GRUPO",
-				"min"		=> "1",
-				"maximo"	=> "1"
-			),
-		),
-	),
+/* 
+Creación del grafo en json que contiene nodos y aristas. 
+Tenemos 3 tipos de aristas: -> source, target, puntaje, actividad (lo que dice)
+	* De Curso a Grupo (tiene source (idCurso), target (idGrupo), puntaje y actividad previa (CURSO o EXAMEN))
+	* De Grupo a Curso (tiene source (idGrupo), target (idCurso), actividad previa (GRUPO) y actividad (CURSO o EXAMEN))
+	* De Curso a Curso (tiene source (idCurso1), target (idCurso2), actividad previa (CURSO o EXAMEN) y actividad (CURSO o EXAMEN))
 	
-	"edges"	=> array(
-		0 => array(
-			"data" => array(
-				"source" 	=> "C1020", 
-				"target"	=> "GC1020",
-				"puntaje"	=> "1",
-				"actividadPrevia"	=> "CURSO",
-			),
-		),
-		1 => array(
-			"data" => array(
-				"source" 	=> "C1052", 
-				"target"	=> "GC1020",
-				"puntaje"	=> "1",
-				"actividadPrevia"	=> "CURSO"
-			),
-		),
-		2 => array(
-			"data" => array(
-				"source" 	=> "C1030", 
-				"target"	=> "G1002",
-				"puntaje"	=> "1",
-				"actividadPrevia"	=> "EXAMEN"
-			),
-		),
-		3 => array(
-			"data" => array(
-				"source" 	=> "G1002", 
-				"target"	=> "C1025",
-				"actividadPrevia"	=> "GRUPO",
-				"actividad"	=> "CURSO"
-			),
-		),
-		4 => array(
-			"data" => array(
-				"source" 	=> "GC1020", 
-				"target"	=> "C1022",
-				"actividadPrevia"	=> "GRUPO",
-				"actividad"	=> "CURSO"
-			),
-		),
-		5 => array(
-			"data" => array(
-				"source" 	=> "C1022", 
-				"target"	=> "G1001",
-				"puntaje"	=> "1",
-				"actividadPrevia"	=> "CURSO"
-			),
-		),
-		6 => array(
-			"data" => array(
-				"source" 	=> "G1001", 
-				"target"	=> "C1025",
-				"actividadPrevia"	=> "GRUPO",
-				"actividad"	=> "CURSO"
-			),
-		),
-		7 => array(
-			"data" => array(
-				"source" 	=> "C1020", 
-				"target"	=> "G1001",
-				"puntaje"	=> "3",
-				"actividadPrevia"	=> "EXAMEN",
-			),
-		),
-		8 => array(
-			"data" => array(
-				"source" 	=> "GC1020", 
-				"target"	=> "C1153",
-				"actividadPrevia"	=> "GRUPO",
-				"actividad"	=> "CURSO"
-			),
-		),
-		9 => array(
-			"data" => array(
-				"source" 	=> "C1151", 
-				"target"	=> "GFIS",
-				"puntaje"	=> "1",
-				"actividadPrevia"	=> "CURSO",
-			),
-		),
-		10 => array(
-			"data" => array(
-				"source" 	=> "C1151", 
-				"target"	=> "GFIS",
-				"puntaje"	=> "2",
-				"actividadPrevia"	=> "EXAMEN",
-			),
-		),
-		11 => array(
-			"data" => array(
-				"source" 	=> "C1152", 
-				"target"	=> "GFIS",
-				"puntaje"	=> "1",
-				"actividadPrevia"	=> "CURSO",
-			),
-		),
-		12 => array(
-			"data" => array(
-				"source" 	=> "GFIS", 
-				"target"	=> "C1153",
-				"actividadPrevia"	=> "GRUPO",
-				"actividad"	=> "CURSO"
-			),
-		),
-		13 => array(
-			"data" => array(
-				"source" 	=> "C1151", 
-				"target"	=> "C1152",
-				"actividadPrevia"	=> "CURSO",
-				"actividad"	=> "CURSO"
-			),
-		),
-		14 => array(
-			"data" => array(
-				"source" 	=> "G1020E", 
-				"target"	=> "C1022",
-				"actividadPrevia"	=> "GRUPO",
-				"actividad"	=> "EXAMEN"
-			),
-		),
-		15 => array(
-			"data" => array(
-				"source" 	=> "C1020", 
-				"target"	=> "G1020E",
-				"puntaje"	=> "1",
-				"actividadPrevia"	=> "EXAMEN",
-			),
-		),
-	)
-);
+Tenemos 2 tipos de nodos: 
+	* De Curso (tiene id, nombre, tipo (CURSO) , semestre, instituto, creditos, validez, nota_promedio, total_cursantes, aprobados, exonerados, %aprobacion)
+	* De Grupo (tiene id, nombre, tipo (GRUPO) , min, max) 
+	
+*/
+include ('../persistencia/conexion.php');
 
- $grafo_json = json_encode($grafo);
- echo $grafo_json;
 
+function obtener_grafo($idCarrera){
+	ini_set('xdebug.var_display_max_depth', -1);
+ini_set('xdebug.var_display_max_children', -1);
+ini_set('xdebug.var_display_max_data', -1);
+	// Primero tengo que obtener los nodos y después hacer las aristas
+	$grafo = array(
+		"nodes" => array(),
+		"edges"	=> array()
+	);	
+	try {
+	
+		//$previaDeCurso;
+		//Abro conexion
+		$bd = conectar();
+		$fila = array();
+		
+		if($bd != null){
+			$bd->autocommit(false);
+			
+			$bd->begin_transaction();
+			// Obtengo los NODOS
+			
+			// Obtengo los nodos que son de tipo CURSO que sean de la carrera seleccionada
+			$infoCursos= $bd->query("SELECT c.idCurso, CONVERT(c.nombre USING utf8) as nombre, c.instituto, c.creditos, c.validez, 
+									 c.semestre, c.exonerable, c.nota_promedio, c.total_cursantes, c.aprobados, c.exonerados, c.porcentaje_aprobacion 
+									 FROM cursos c, curso_carrera cc
+									 WHERE cc.idCarrera = '$idCarrera' AND c.idCurso = cc.idCurso");
+			$i = 0;	
+			$j = 0;				
+			$filaCurso = array();
+			if($infoCursos != false and $infoCursos->num_rows != 0 ){
+				while($rowCurso = $infoCursos->fetch_assoc()) {
+					
+					$idCurso = $rowCurso["idCurso"];
+					$grafo["nodes"][$j]["data"]["id"] = "C" . $idCurso;
+					
+					$nombre = $rowCurso["nombre"];
+					$grafo["nodes"][$j]["data"]["name"] = utf8_encode($nombre);
+					//echo 'NOMBRE COMUN: ' . $nombre . '<br>';
+					//echo 'NOMBRE ENCODE: ' . $filaCurso["data"]["name"] . '<br>';
+					
+					$grafo["nodes"][$j]["data"]["tipo"] = "CURSO";
+						
+					$instituto = $rowCurso["instituto"];
+					$grafo["nodes"][$j]["data"]["instituto"] = $instituto;
+					
+					$creditos = $rowCurso["creditos"];
+					$grafo["nodes"][$j]["data"]["creditos"] = $creditos;
+					
+					$validez = $rowCurso["validez"];
+					$grafo["nodes"][$j]["data"]["validez"] = $validez;
+					
+					$semestre = $rowCurso["semestre"];
+					$grafo["nodes"][$j]["data"]["semestre"] = $semestre;
+					
+					$exonerable = $rowCurso["exonerable"];
+					$grafo["nodes"][$j]["data"]["exonerable"] = utf8_encode($exonerable);
+					
+					$notaProm = $rowCurso["nota_promedio"];
+					$grafo["nodes"][$j]["data"]["nota_promedio"] = $notaProm;
+					
+					$totalCursantes = $rowCurso["total_cursantes"];
+					$grafo["nodes"][$j]["data"]["total_cursantes"] = $totalCursantes;
+					
+					$aprobados = $rowCurso["aprobados"];
+					$grafo["nodes"][$j]["data"]["aprobados"] = $aprobados;
+					
+					$exonerados = $rowCurso["exonerados"];
+					$grafo["nodes"][$j]["data"]["exonerados"] = $exonerados;
+					
+					$aprobacion = $rowCurso["porcentaje_aprobacion"];
+					$grafo["nodes"][$j]["data"]["aprobacion"] = $aprobacion;
+					
+					//$grafo["nodes"][0][data][$i] = $filaCurso;
+					
+					//echo 'filaCurso: ' . json_encode($grafo) . '<br>';
+					
+					$i = $i + 1;
+					$j = $j + 1;
+					
+				}
+			}
+
+			
+			// Obtengo los nodos que son de tipo GRUPO cuyas materias sean de la carrera seleccionada
+			$infoGrupos= $bd->query("SELECT g.idGrupo, g.nombre, g.min, g.max 
+									 FROM grupos g
+									 WHERE g.idGrupo in ( SELECT DISTINCT cg.idGrupo
+														  FROM curso_grupo cg, curso_carrera cc
+														  WHERE cc.idCarrera = '$idCarrera' AND cg.idCurso = cc.idCurso)");
+			$i = 0;		
+			$filaGrupo = array();
+			if($infoGrupos != false and $infoGrupos->num_rows != 0 ){
+				while($rowGrupo = $infoGrupos->fetch_assoc()) {
+					
+					$idGrupo = $rowGrupo["idGrupo"];
+					$grafo["nodes"][$j]["data"]["id"] = "G" . $idGrupo;
+					
+					$nombre = $rowGrupo["nombre"];
+					$grafo["nodes"][$j]["data"]["name"] = $nombre;
+					
+					$grafo["nodes"][$j]["data"]["tipo"] = "GRUPO";
+					
+					$min = $rowGrupo["min"];
+					$grafo["nodes"][$j]["data"]["min"] = $min;
+					
+					$max = $rowGrupo["max"];
+					$grafo["nodes"][$j]["data"]["max"] = $max;
+					
+					//$grafo["nodes"][1][$i] = $filaGrupo;
+					
+					$i = $i + 1;
+					$j = $j + 1;
+				}
+			}
+			
+			// Obtengo las ARISTAS
+			
+			// Obtengo las aristas que son de Cursos a Grupos, que sean de la carrera seleccionada
+			$aristasCG= $bd->query("SELECT cg.idGrupo, cg.idCurso, cg.puntaje, cg.actividad
+									 FROM curso_grupo cg, curso_carrera cc
+									 WHERE cc.idCarrera = '$idCarrera' AND cg.idCurso = cc.idCurso");
+			$i = 0;	
+			$j = 0;		
+			$aristaCG = array();
+			if($aristasCG != false and $aristasCG->num_rows != 0 ){
+				while($rowCG = $aristasCG->fetch_assoc()) {
+					
+					$idCurso = $rowCG["idCurso"];
+					$grafo["edges"][$j]["data"]["source"] = "C" . $idCurso;
+					
+					$idGrupo = $rowCG["idGrupo"];
+					$grafo["edges"][$j]["data"]["target"] = "G" . $idGrupo;
+					
+					$puntaje = $rowCG["puntaje"];
+					$grafo["edges"][$j]["data"]["puntaje"] = $puntaje;
+					
+					$actividad = $rowCG["actividad"];
+					$grafo["edges"][$j]["data"]["actividadPrevia"] = $actividad ;
+					
+					//$grafo["edges"][0]["data"][$i] = $aristaCG;
+					
+					$i = $i + 1;
+					$j = $j + 1;
+					
+				}
+			}
+			
+			// Obtengo las aristas que son de Grupos a Cursos, que sean de la carrera seleccionada
+			$aristasGC= $bd->query("SELECT pg.idCurso, pg.idGrupo, pg.actividad
+									 FROM previas_grupos pg, curso_carrera cc  
+									 WHERE cc.idCarrera = '$idCarrera' AND pg.idCurso = cc.idCurso");
+			$i = 0;		
+			$aristaGC = array(); 
+			if($aristasGC != false and $aristasGC->num_rows != 0 ){   
+				while($rowGC = $aristasGC->fetch_assoc()) {
+					
+					$idGrupo = $rowGC["idGrupo"];
+					$grafo["edges"][$j]["data"]["source"] = "G" . $idGrupo;
+					
+					$idCurso = $rowGC["idCurso"];
+					$grafo["edges"][$j]["data"]["target"] = "C" . $idCurso;
+					$actividad = $rowGC["actividad"];
+					$grafo["edges"][$j]["data"]["actividad"] = 		$actividad ;
+					
+					$grafo["edges"][$j]["data"]["actividadPrevia"] = "GRUPO";
+						
+					
+					//$grafo["edges"][1]["data"][$i] = $aristaGC;
+					
+					$i = $i + 1;
+					$j = $j + 1;
+					
+				}
+			}
+			
+
+			
+			// Obtengo las aristas que son de Cursos a Cursos, que sean de la carrera seleccionada
+			$aristasCC= $bd->query("SELECT pc.idCurso, pc.idPrevia, pc.actividadPrevia, pc.actividad
+									 FROM previas_cursos pc, curso_carrera cc  
+									 WHERE cc.idCarrera = '$idCarrera' AND pc.idCurso = cc.idCurso");
+			$i = 0;		
+			$aristaCC = array(); 
+			if($aristasCC != false and $aristasCC->num_rows != 0 ){   
+				while($rowCC = $aristasCC->fetch_assoc()) {
+					
+					$idCurso = $rowCC["idCurso"];
+					$idPrevia = $rowCC["idPrevia"];
+					$actividadPrevia = $rowCC["actividadPrevia"];
+					$actividad = $rowCC["actividad"];
+					
+					if ($idCurso != $idPrevia) {
+						$grafo["edges"][$j]["data"]["source"] = "C" . $idPrevia;
+						$grafo["edges"][$j]["data"]["target"] = "C" . $idCurso;
+						$grafo["edges"][$j]["data"]["actividadPrevia"] = strtoupper($actividadPrevia);
+						$grafo["edges"][$j]["data"]["actividad"] = $actividad ;
+						
+						$i = $i + 1;
+						$j = $j + 1;
+					}
+					
+					
+					
+					
+					//$grafo["edges"][2]["data"][$i] = $aristaCC;
+					
+					//echo "fila: " . json_encode($aristaCC);
+					
+					
+					
+				}
+			}
+			
+			//Cierro conexion
+			$bd->close();
+		}
+	}
+	catch (Exception $e) {
+		echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
+	}
+	//var_dump($grafo['nodes']);
+	//var_dump($grafo);
+	$grafo_json = json_encode($grafo);
+	echo $grafo_json;
+	
+	
+}
+//obtener_grafo('7200');
+obtener_grafo($_POST['idCarrera']);
 ?>

@@ -5,7 +5,7 @@ var stack = [];
 function obtenerGrafoDelServidor(idCarrera) {
 			
 		var parametros = {
-			"carrera" : idCarrera,
+			"idCarrera" : idCarrera,
 		};
 		
 		jQuery.ajax({
@@ -15,15 +15,15 @@ function obtenerGrafoDelServidor(idCarrera) {
 			async: false,
 			beforeSend: function () { },
 			success:  function (response) {
-
+				//console.log(response);
 				grafo = jQuery.parseJSON(response);
-				
+				console.log(grafo);
 				cy = window.cy = cytoscape({
 					elements: grafo 
 				});
 				
 				construirGrafoReducido(cy);
-				
+				console.log(cy);
 			}
 		});	
 }

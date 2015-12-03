@@ -12,7 +12,7 @@ function guardar_grupo ($datosGrupo){
 	
 	try {
 		
-		$idGrupo = $datosGrupo['idGrupo'];
+		$idGrupo = str_replace(" ", "", $datosGrupo['idGrupo']);
 		$nombre = $datosGrupo['nombre'];
 		$min = $datosGrupo['min'];
 		$max = $datosGrupo['max'];
@@ -35,7 +35,7 @@ function guardar_grupo ($datosGrupo){
 			//Chequeo si el curso existe
 			$idCurso = $curso['idCurso'];
 			$puntaje = $curso['puntaje'];
-			$actividad = $curso['actividad'];
+			$actividad = $curso['actividad'] == "Examen aprobado" ? "EXAMEN" : "CURSO";
 			
 			$existe = existe_curso($idCurso);
 			

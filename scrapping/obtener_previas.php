@@ -89,9 +89,9 @@ function obtenerPreviasCurso($idCarrera,$idCurso,$client) {
 					$GLOBALS['previaDeCurso']= false;
 				}				
 				if ($GLOBALS['previaDeCurso']) {
-					$actividad= 'curso';
+					$actividad= 'CURSO';
 				} else {
-					$actividad= 'examen';
+					$actividad= 'EXAMEN';
 				}
 				
 				if ($obs=='(*)') {
@@ -107,9 +107,9 @@ function obtenerPreviasCurso($idCarrera,$idCurso,$client) {
 					} else {
 						//La previa es un Curso aprobado o un Examen aprobado
 						if ($actPrevia=='Curso aprobado') {
-							$actPrevia= 'curso';
+							$actPrevia= 'CURSO';
 						} elseif ($actPrevia=='Curso aprobado') {
-							$actPrevia= 'examen';
+							$actPrevia= 'EXAMEN';
 						}			
 						guardarPreviaCurso($idCarrera,$idCurso,$previa,$actividad,$actPrevia);
 					}
