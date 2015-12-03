@@ -167,7 +167,7 @@ function obtener_grafo($idCarrera){
 					$grafo["edges"][$j]["data"]["puntaje"] = $puntaje;
 					
 					$actividad = $rowCG["actividad"];
-					$grafo["edges"][$j]["data"]["actividadPrevia"] = $actividad;
+					$grafo["edges"][$j]["data"]["actividadPrevia"] = strtoupper($actividad);
 					
 					//$grafo["edges"][0]["data"][$i] = $aristaCG;
 					
@@ -197,7 +197,7 @@ function obtener_grafo($idCarrera){
 					$grafo["edges"][$j]["data"]["actividad"] = "GRUPO";
 					
 					$actividad = $rowGC["actividad"];
-					$grafo["edges"][$j]["data"]["actividadPrevia"] = $actividad;
+					$grafo["edges"][$j]["data"]["actividadPrevia"] = strtoupper($actividad);
 					
 					//$grafo["edges"][1]["data"][$i] = $aristaGC;
 					
@@ -226,8 +226,8 @@ function obtener_grafo($idCarrera){
 					if ($idCurso != $idPrevia) {
 						$grafo["edges"][$j]["data"]["source"] = "C" . $idCurso;
 						$grafo["edges"][$j]["data"]["target"] = "C" . $idPrevia;
-						$grafo["edges"][$j]["data"]["actividadPrevia"] = $actividadPrevia;
-						$grafo["edges"][$j]["data"]["actividad"] = $actividad;
+						$grafo["edges"][$j]["data"]["actividadPrevia"] = strtoupper($actividadPrevia);
+						$grafo["edges"][$j]["data"]["actividad"] = strtoupper($actividad);
 						
 						$i = $i + 1;
 						$j = $j + 1;
