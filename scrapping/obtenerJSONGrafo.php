@@ -48,8 +48,8 @@ function obtener_grafo($idCarrera){
 			echo "Obteniendo Nodos Cursos...<br>";
 			
 			// Obtengo los nodos que son de tipo CURSO que sean de la carrera seleccionada
-			$infoCursos= $bd->query("SELECT c.idCurso, CONVERT(c.nombre USING utf8) as nombre, c.instituto, c.creditos, c.validez, c.nota_promedio, 
-									 c.total_cursantes, c.aprobados, c.exonerados, c.porcentaje_aprobacion 
+			$infoCursos= $bd->query("SELECT c.idCurso, CONVERT(c.nombre USING utf8) as nombre, c.instituto, c.creditos, c.validez, 
+									 c.semestre, c.exonerable, c.nota_promedio, c.total_cursantes, c.aprobados, c.exonerados, c.porcentaje_aprobacion 
 									 FROM cursos c, curso_carrera cc
 									 WHERE cc.idCarrera = '$idCarrera' AND c.idCurso = cc.idCurso");
 			$i = 0;		
@@ -58,44 +58,48 @@ function obtener_grafo($idCarrera){
 				while($rowCurso = $infoCursos->fetch_assoc()) {
 					
 					$idCurso = $rowCurso["idCurso"];
-					$filaCurso["data"]["id"] = "C" . $idCurso;
+					$grafo["nodes"][0]["data"][$i]["id"] = "C" . $idCurso;
 					
 					$nombre = $rowCurso["nombre"];
-					$filaCurso["data"]["name"] = utf8_encode($nombre);
+					$grafo["nodes"][0]["data"][$i]["name"] = utf8_encode($nombre);
 					//echo 'NOMBRE COMUN: ' . $nombre . '<br>';
 					//echo 'NOMBRE ENCODE: ' . $filaCurso["data"]["name"] . '<br>';
 					
-					$filaCurso["data"]["tipo"] = "CURSO";
-					
-					$filaCurso["data"]["semestre"] = "1";
-					
+					$grafo["nodes"][0]["data"][$i]["tipo"] = "CURSO";
+						
 					$instituto = $rowCurso["instituto"];
-					$filaCurso["data"]["instituto"] = $instituto;
+					$grafo["nodes"][0]["data"][$i]["instituto"] = $instituto;
 					
 					$creditos = $rowCurso["creditos"];
-					$filaCurso["data"]["creditos"] = $creditos;
+					$grafo["nodes"][0]["data"][$i]["creditos"] = $creditos;
 					
 					$validez = $rowCurso["validez"];
-					$filaCurso["data"]["validez"] = $validez;
+					$grafo["nodes"][0]["data"][$i]["validez"] = $validez;
+					
+					$semestre = $rowCurso["semestre"];
+					$grafo["nodes"][0]["data"][$i]["semestre"] = $semestre;
+					
+					$exonerable = $rowCurso["exonerable"];
+					$grafo["nodes"][0]["data"][$i]["exonerable"] = utf8_encode($exonerable);
 					
 					$notaProm = $rowCurso["nota_promedio"];
-					$filaCurso["data"]["nota_promedio"] = $notaProm;
+					$grafo["nodes"][0]["data"][$i]["nota_promedio"] = $notaProm;
 					
 					$totalCursantes = $rowCurso["total_cursantes"];
-					$filaCurso["data"]["total_cursantes"] = $totalCursantes;
+					$grafo["nodes"][0]["data"][$i]["total_cursantes"] = $totalCursantes;
 					
 					$aprobados = $rowCurso["aprobados"];
-					$filaCurso["data"]["aprobados"] = $aprobados;
+					$grafo["nodes"][0]["data"][$i]["aprobados"] = $aprobados;
 					
 					$exonerados = $rowCurso["exonerados"];
-					$filaCurso["data"]["exonerados"] = $exonerados;
+					$grafo["nodes"][0]["data"][$i]["exonerados"] = $exonerados;
 					
 					$aprobacion = $rowCurso["porcentaje_aprobacion"];
-					$filaCurso["data"]["aprobacion"] = $aprobacion;
+					$grafo["nodes"][0]["data"][$i]["aprobacion"] = $aprobacion;
 					
-					$grafo["nodes"][0][$i] = $filaCurso;
+					//$grafo["nodes"][0][data][$i] = $filaCurso;
 					
-					//echo 'filaCurso: ' . json_encode($filaCurso) . '<br>';
+					//echo 'filaCurso: ' . json_encode($grafo) . '<br>';
 					
 					$i = $i + 1;
 					
@@ -116,20 +120,20 @@ function obtener_grafo($idCarrera){
 				while($rowGrupo = $infoGrupos->fetch_assoc()) {
 					
 					$idGrupo = $rowGrupo["idGrupo"];
-					$filaGrupo["data"]["id"] = "G" . $idGrupo;
+					$grafo["nodes"][1]["data"][$i]["id"] = "G" . $idGrupo;
 					
 					$nombre = $rowGrupo["nombre"];
-					$filaGrupo["data"]["name"] = $nombre;
+					$grafo["nodes"][1]["data"][$i]["name"] = $nombre;
 					
-					$filaGrupo["data"]["tipo"] = "GRUPO";
+					$grafo["nodes"][1]["data"][$i]["tipo"] = "GRUPO";
 					
 					$min = $rowGrupo["min"];
-					$filaGrupo["data"]["min"] = $min;
+					$grafo["nodes"][1]["data"][$i]["min"] = $min;
 					
 					$max = $rowGrupo["max"];
-					$filaGrupo["data"]["max"] = $max;
+					$grafo["nodes"][1]["data"][$i]["max"] = $max;
 					
-					$grafo["nodes"][1][$i] = $filaGrupo;
+					//$grafo["nodes"][1][$i] = $filaGrupo;
 					
 					$i = $i + 1;
 
@@ -150,18 +154,18 @@ function obtener_grafo($idCarrera){
 				while($rowCG = $aristasCG->fetch_assoc()) {
 					
 					$idCurso = $rowCG["idCurso"];
-					$aristaCG["data"]["source"] = "C" . $idCurso;
+					$grafo["edges"][0]["data"][$i]["source"] = "C" . $idCurso;
 					
 					$idGrupo = $rowCG["idGrupo"];
-					$aristaCG["data"]["target"] = "G" . $idGrupo;
+					$grafo["edges"][0]["data"][$i]["target"] = "G" . $idGrupo;
 					
 					$puntaje = $rowCG["puntaje"];
-					$aristaCG["data"]["puntaje"] = $puntaje;
+					$grafo["edges"][0]["data"][$i]["puntaje"] = $puntaje;
 					
 					$actividad = $rowCG["actividad"];
-					$aristaCG["data"]["actividadPrevia"] = $actividad;
+					$grafo["edges"][0]["data"][$i]["actividadPrevia"] = $actividad;
 					
-					$grafo["edges"][0][$i] = $aristaCG;
+					//$grafo["edges"][0]["data"][$i] = $aristaCG;
 					
 					$i = $i + 1;
 					
@@ -180,17 +184,17 @@ function obtener_grafo($idCarrera){
 				while($rowGC = $aristasGC->fetch_assoc()) {
 					
 					$idGrupo = $rowGC["idGrupo"];
-					$aristaGC["data"]["source"] = "G" . $idGrupo;
+					$grafo["edges"][1]["data"][$i] ["source"] = "G" . $idGrupo;
 					
 					$idCurso = $rowGC["idCurso"];
-					$aristaGC["data"]["target"] = "C" . $idCurso;
+					$grafo["edges"][1]["data"][$i] ["target"] = "C" . $idCurso;
 
-					$aristaGC["data"]["actividad"] = "GRUPO";
+					$grafo["edges"][1]["data"][$i] ["actividad"] = "GRUPO";
 					
 					$actividad = $rowGC["actividad"];
-					$aristaGC["data"]["actividadPrevia"] = $actividad;
+					$grafo["edges"][1]["data"][$i] ["actividadPrevia"] = $actividad;
 					
-					$grafo["edges"][1][$i] = $aristaGC;
+					//$grafo["edges"][1]["data"][$i] = $aristaGC;
 					
 					$i = $i + 1;
 					
@@ -209,20 +213,20 @@ function obtener_grafo($idCarrera){
 				while($rowCC = $aristasCC->fetch_assoc()) {
 					
 					$idCurso = $rowCC["idCurso"];
-					$aristaCC["data"]["source"] = "C" . $idCurso;
+					$grafo["edges"][2]["data"][$i]["source"] = "C" . $idCurso;
 					
 					$idPrevia = $rowCC["idPrevia"];
-					$aristaCC["data"]["target"] = "C" . $idPrevia;
+					$grafo["edges"][2]["data"][$i]["target"] = "C" . $idPrevia;
 					
 					$actividadPrevia = $rowCC["actividadPrevia"];
-					$aristaCC["data"]["actividadPrevia"] = $actividadPrevia;
+					$grafo["edges"][2]["data"][$i]["actividadPrevia"] = $actividadPrevia;
 					
 					$actividad = $rowCC["actividad"];
-					$aristaCC["data"]["actividad"] = $actividad;
+					$grafo["edges"][2]["data"][$i]["actividad"] = $actividad;
 					
-					$grafo["edges"][1][$i] = $aristaCC;
+					//$grafo["edges"][2]["data"][$i] = $aristaCC;
 					
-					echo "fila: " . json_encode($aristaCC);
+					//echo "fila: " . json_encode($aristaCC);
 					
 					$i = $i + 1;
 					
