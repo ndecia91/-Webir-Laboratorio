@@ -1,0 +1,23 @@
+previas_creditos = array(
+		['idCurso'] => array(
+					['area'] => (string)'valorArea'
+					['creditos'] => (int) cantCreditos
+		),
+);
+
+////EJEMPLO
+
+previas_creditos = array(
+		['2034'] => array(
+					['area'] => 'CARRERA'
+					['creditos'] => 250
+		),
+		['1516'] => array(
+					['area'] => 'CARRERA'
+					['creditos'] => 80
+		),
+		['1730'] => array(
+					['area'] => 'CARRERA'
+					['creditos'] => 330
+		),
+);
