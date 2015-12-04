@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-12-2015 a las 00:43:23
+-- Tiempo de generación: 04-12-2015 a las 23:35:59
 -- Versión del servidor: 5.6.17
 -- Versión de PHP: 5.5.12
 
@@ -541,6 +541,35 @@ INSERT INTO `grupos` (`idGrupo`, `nombre`, `min`, `max`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `previas_creditos`
+--
+
+CREATE TABLE IF NOT EXISTS `previas_creditos` (
+  `idCarrera` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
+  `idCurso` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
+  `area` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
+  `creditos` int(3) NOT NULL,
+  PRIMARY KEY (`idCarrera`,`idCurso`,`area`),
+  KEY `idCurso` (`idCurso`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `previas_creditos`
+--
+
+INSERT INTO `previas_creditos` (`idCarrera`, `idCurso`, `area`, `creditos`) VALUES
+('7200', '1213', 'CARRERA', 100),
+('7200', '1507', 'CARRERA', 100),
+('7200', '1510', 'CARRERA', 80),
+('7200', '1519', 'CARRERA', 100),
+('7200', '1730', 'CARRERA', 330),
+('7200', '1944', 'CARRERA', 250),
+('7200', '2034', 'CARRERA', 250),
+('7200', '2036', 'CARRERA', 250);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `previas_cursos`
 --
 
@@ -914,6 +943,13 @@ ALTER TABLE `curso_carrera`
 ALTER TABLE `curso_grupo`
   ADD CONSTRAINT `curso_grupo_ibfk_1` FOREIGN KEY (`idGrupo`) REFERENCES `grupos` (`idGrupo`),
   ADD CONSTRAINT `curso_grupo_ibfk_2` FOREIGN KEY (`idCurso`) REFERENCES `cursos` (`idCurso`);
+
+--
+-- Filtros para la tabla `previas_creditos`
+--
+ALTER TABLE `previas_creditos`
+  ADD CONSTRAINT `previas_creditos_ibfk_2` FOREIGN KEY (`idCurso`) REFERENCES `cursos` (`idCurso`),
+  ADD CONSTRAINT `previas_creditos_ibfk_1` FOREIGN KEY (`idCarrera`) REFERENCES `carreras` (`idCarrera`);
 
 --
 -- Filtros para la tabla `previas_cursos`

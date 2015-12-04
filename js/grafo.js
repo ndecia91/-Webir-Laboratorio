@@ -193,48 +193,6 @@ function inicializarGrafo(grafo){
 	})
 }
 
-/*
-function obtenerGrafoReducido(cy){
-	
-	var datosNodosCurso = obtenerDatosNodosTipoCurso(cy);
-	
-	//Agrego nodos tipo curso
-	var grafo = [];
-	datosNodosCurso.forEach(
-		function(nodo, i){
-			grafo.push({data: { id: nodo.id, name: nodo.name, estado: 'INHABILITADO'}});
-		}
-	);
-	
-	//Agrego aristas
-	datosNodosCurso.forEach(function (nodo, i){
-		var aristasAdyacentes = obtenerDatosAristasAdyacentes(cy, nodo.id);
-		aristasAdyacentes.forEach(function(arista, i) {
-			var nodoAdyacente = obtenerDatosNodo(cy, arista.target);
-			var estilos = arista.actividadPrevia == "CURSO" ? estilosAristaCurso : estilosAristaExamen;
-			var indiceColor = Math.round(10 * Math.random()) % colores.length;
-			if(nodoAdyacente.tipo == "CURSO"){
-				if(arista.actividad == "CURSO")
-					grafo.push({data: {source: nodo.id, target: nodoAdyacente.id}, style: estilos})
-			}else{//GRUPO
-				estilos['text-background-color'] = colores[indiceColor];
-				indiceColor = (indiceColor + 1) % colores.length;
-				var puntaje = arista.puntaje;
-				var minimo 	= obtenerDatosNodo(cy, arista.target).min;
-				var label = puntaje + "/" + minimo;
-				var aristasAdyacentes = obtenerDatosAristasAdyacentes(cy, nodoAdyacente.id);
-				aristasAdyacentes.forEach(function(arista, i){
-					if(arista.actividad == "CURSO")
-						grafo.push({data: {source: nodo.id, target: arista.target, label: label}, style: estilos});
-				});
-			}
-				
-		});
-	});
-	console.log(grafo);
-	return grafo;
-} */
-
 function obtenerGrafoReducido(cy){
 	
 	var datosNodosCurso = obtenerDatosNodosTipoCurso(cy);
@@ -403,21 +361,26 @@ function actualizarEstadoNodo(cyr, idNodo){
 }
 
 function cursoAprobado(cy, cyr, idNodo){
+
 	//Obtengo aristas incidentes
 	var aristasIncidentes = obtenerDatosAristasIncidentes(cy, idNodo);
 	for (arista of aristasIncidentes) {
 		//Obtengo nodo padre
 		var actividad = arista.actividad;
 		if(actividad == "CURSO"){
+				
 			var idPadre = arista.source;
+			
 			var actividadPreviaArista = arista.actividadPrevia;
 			if(actividadPreviaArista == "GRUPO"){
 				if(!grupoAprobado(cy, cyr, idPadre))
 					return false;
 			}else{
+				
 				var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
-				if (actividadPreviaArista == "CURSO" && 
-					(!estadoNodoPadre == "INHABILITADO"))
+				console.log("estado:"+estadoNodoPadre);
+				if ((actividadPreviaArista == "CURSO") && 
+					((estadoNodoPadre == "INHABILITADO") || (estadoNodoPadre == "HABILITADO")))
 					return false;
 				if (actividadPreviaArista == "EXAMEN" && 
 					(estadoNodoPadre != "EXONERADO"))
@@ -443,8 +406,8 @@ function cursoExonerado(cy, cyr, idNodo){
 					return false;
 			}else{
 				var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
-				if (actividadPreviaArista == "CURSO" && 
-					(!estadoNodoPadre == "INHABILITADO"))
+				if ((actividadPreviaArista == "CURSO") && 
+					((estadoNodoPadre == "INHABILITADO") || (estadoNodoPadre == "HABILITADO")))
 					return false;
 				if (actividadPreviaArista == "EXAMEN" && 
 					(estadoNodoPadre != "EXONERADO"))
