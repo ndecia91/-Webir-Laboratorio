@@ -4,35 +4,35 @@ function obtenerPreviasCreditos ($idCarrera){
 	//Obtener info de la base y armar el array
 	
 	$previas_creditos = array(
-		'2034' => array(
+		'C2034' => array(
 					'area' => 'CARRERA',
 					'creditos' => 250,
 		),
-		'1510' => array(
+		'C1510' => array(
 					'area' => 'CARRERA',
 					'creditos' => 80,
 		),
-		'1730' => array(
+		'C1730' => array(
 					'area' => 'CARRERA',
 					'creditos' => 330,
 		),
-		'2036' => array(
+		'C2036' => array(
 					'area' => 'CARRERA',
 					'creditos' => 250,
 		),
-		'1519' => array(
+		'C1519' => array(
 					'area' => 'CARRERA',
 					'creditos' => 100,
 		),
-		'1944' => array(
+		'C1944' => array(
 					'area' => 'CARRERA',
 					'creditos' => 250,
 		),
-		'1213' => array(
+		'C1213' => array(
 					'area' => 'CARRERA',
 					'creditos' => 100,
 		),
-		'1507' => array(
+		'C1507' => array(
 					'area' => 'CARRERA',
 					'creditos' => 100,
 		),
@@ -45,5 +45,6 @@ function obtenerPreviasCreditos ($idCarrera){
 	
 }
 
+obtenerPreviasCreditos($_POST['idCarrera']);
  
 ?>

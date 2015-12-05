@@ -1,6 +1,8 @@
 var cy;
 var cyr;
+var previasCreditos;
 var stack = [];
+var cantCreditos = 0;
 
 function obtenerGrafoDelServidor(idCarrera) {
 			
@@ -15,18 +17,17 @@ function obtenerGrafoDelServidor(idCarrera) {
 			async: false,
 			beforeSend: function () { },
 			success:  function (response) {
-				//console.log(response);
 				grafo = jQuery.parseJSON(response);
-				console.log(grafo);
 				cy = window.cy = cytoscape({
 					elements: grafo 
 				});
 				
-				construirGrafoReducido(cy);
-				console.log(cy);
+				construirGrafoReducido(cy, idCarrera);
+
 			}
 		});	
 }
+
 
 function modificarDatoNodo(cy, idNodo, atributo, valor)
 {
@@ -161,7 +162,9 @@ function obtenerDatosNodosRaiz(cy)
 	
 }
 
-function construirGrafoReducido(cy){
+function construirGrafoReducido(cy, idCarrera){
+	
+	obtenerPreviasCreditos(idCarrera);
 	
 	var grafo = obtenerGrafoReducido(cy);
 	//Grafo reducido
@@ -183,13 +186,37 @@ function construirGrafoReducido(cy){
 	stack.push(cyr.json());
 }
 
+function obtenerPreviasCreditos(idCarrera){
+	var parametros = {
+			"idCarrera" : idCarrera,
+	};
+	jQuery.ajax({
+			data:  parametros,
+			url:   'logica/obtenerPreviasCreditos.php',
+			type:  'post',
+			async: false,
+			beforeSend: function () { },
+			success:  function (response) {
+				 previasCreditos = jQuery.parseJSON(response);
+			}
+	});
+}
+
+function tienePreviaDeCreditos(idNodo)
+{
+	console.log(previasCreditos);
+	return (previasCreditos[idNodo] != undefined)
+}
+
 function inicializarGrafo(grafo){
 	//Marco cursos raices como visibles, en color rojo y en estado habilitado
 	var nodosRaiz = obtenerDatosNodosRaiz(grafo);
 	nodosRaiz.forEach(function (nodo, i){
-		modificarEstiloNodo(grafo, nodo.id, 'background-color', '#e60000');
-		modificarEstiloNodo(grafo, nodo.id, 'visibility', 'visible');
-		modificarDatoNodo(grafo, nodo.id, 'estado', 'HABILITADO');
+		if (!tienePreviaDeCreditos(nodo.id)) {
+			modificarEstiloNodo(grafo, nodo.id, 'background-color', '#e60000');
+			modificarEstiloNodo(grafo, nodo.id, 'visibility', 'visible');
+			modificarDatoNodo(grafo, nodo.id, 'estado', 'HABILITADO');
+		}
 	})
 }
 
@@ -208,7 +235,7 @@ function obtenerGrafoReducido(cy){
 	//Agrego aristas
 	datosNodosCurso.forEach(function (nodo, i){
 		var aristasIncidentes = obtenerDatosAristasIncidentes(cy, nodo.id);
-		var indiceColor = 0;//Math.round(10 * Math.random()) % colores.length;
+		var indiceColor = Math.round(10 * Math.random()) % colores.length;
 		aristasIncidentes.forEach(function(arista, i) {
 			var nodoIncidente = obtenerDatosNodo(cy, arista.source);
 			if (arista.actividad == "CURSO") {
@@ -282,7 +309,9 @@ function actualizarGrafo(cy, cyr, idNodo){
 	
 	if(estadoNodo == "HABILITADO"){
 		//Actualizo el estado del nodo
-		actualizarEstadoNodo(cyr, idNodo);
+		if(tienePreviaDeCreditos(idNodo) && (cantCreditos < previasCreditos[idNodo]))
+			return;
+		actualizarEstadoNodo(cy, cyr, idNodo);
 	}else if(estadoNodo == "APROBADO"){
 		//Curso exonerado
 		//Verifico que cumple con las previas del examen
@@ -293,7 +322,7 @@ function actualizarGrafo(cy, cyr, idNodo){
 		}
 		if(!exonerado)
 			return;
-		actualizarEstadoNodo(cyr, idNodo);
+		actualizarEstadoNodo(cy, cyr, idNodo);
 	}
 	
 	
@@ -307,7 +336,7 @@ function actualizarGrafo(cy, cyr, idNodo){
 			var aprobado = cursoAprobado(cy, cyr, curso.id);
 			
 			if(aprobado)
-				actualizarEstadoNodo(cyr, curso.id);
+				actualizarEstadoNodo(cy, cyr, curso.id);
 		}		
 	});
 	console.log("push");
@@ -338,7 +367,7 @@ function rollback()
 	cyr.load();
 }*/
 
-function actualizarEstadoNodo(cyr, idNodo){
+function actualizarEstadoNodo(cy, cyr, idNodo){
 	
 	//Obtengo datos del nodo
 	var datosNodo = obtenerDatosNodo(cyr, idNodo);
@@ -354,6 +383,9 @@ function actualizarEstadoNodo(cyr, idNodo){
 	}else if(estado == "APROBADO"){
 		modificarDatoNodo(cyr, idNodo, 'estado', 'EXONERADO');
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#008000');
+		var datosNodo = obtenerDatosNodo(cy, idNodo);
+		cantCreditos = cantCreditos + parseInt(datosNodo.creditos);
+		jQuery(".cant_creditos").html("Creditos acumulados: "+cantCreditos+" creditos")
 	}else if(estado == "EXONERADO"){
 		modificarDatoNodo(cyr, idNodo, 'estado', 'HABILITADO');
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#e60000');
