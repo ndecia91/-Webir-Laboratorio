@@ -5,15 +5,13 @@ include ('../persistencia/conexion.php');
 
 function obtenerPreviasCreditos ($idCarrera){
 
-	$previas_creditos = array(
-		array()
-	);
+	$previas_creditos = array();
 	
 	try {
 	
 		//Abro conexion
 		$bd = conectar();
-		$fila = array();
+		//$fila = array();
 		
 		if($bd != null){
 			$bd->autocommit(false);
@@ -35,6 +33,8 @@ function obtenerPreviasCreditos ($idCarrera){
 				}
 			}
 			
+			//echo ' grafo: ' . json_encode($previas_creditos) . '<br>';
+			
 			//var_dump($previas_creditos);
 			
 			//Cierro conexion
@@ -46,6 +46,6 @@ function obtenerPreviasCreditos ($idCarrera){
 	
 }//end obtenerPreviasCreditos
  
-//obtenerPreviasCreditos('7200');
+obtenerPreviasCreditos('7200');
  
 ?>
