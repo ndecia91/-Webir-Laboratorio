@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-12-2015 a las 23:35:59
+-- Tiempo de generación: 05-12-2015 a las 19:15:27
 -- Versión del servidor: 5.6.17
 -- Versión de PHP: 5.5.12
 
@@ -563,6 +563,9 @@ INSERT INTO `previas_creditos` (`idCarrera`, `idCurso`, `area`, `creditos`) VALU
 ('7200', '1510', 'CARRERA', 80),
 ('7200', '1519', 'CARRERA', 100),
 ('7200', '1730', 'CARRERA', 330),
+('7200', '1769', 'CARRERA', 250),
+('7200', '1849', 'CARRERA', 100),
+('7200', '1941', 'CARRERA', 250),
 ('7200', '1944', 'CARRERA', 250),
 ('7200', '2034', 'CARRERA', 250),
 ('7200', '2036', 'CARRERA', 250);
@@ -615,6 +618,7 @@ INSERT INTO `previas_cursos` (`idCarrera`, `idCurso`, `idPrevia`, `actividad`, `
 ('7200', '1325', '1325', 'EXAMEN', 'CURSO'),
 ('7200', '1333', '1328', 'CURSO', 'CURSO'),
 ('7200', '1350', '1328', 'CURSO', 'CURSO'),
+('7200', '1442', '1151', 'CURSO', 'EXAMEN'),
 ('7200', '1443', '1443', 'EXAMEN', 'CURSO'),
 ('7200', '1446', '1446', 'EXAMEN', 'CURSO'),
 ('7200', '1449', '1447', 'CURSO', 'CURSO'),
@@ -625,11 +629,19 @@ INSERT INTO `previas_cursos` (`idCarrera`, `idCurso`, `idPrevia`, `actividad`, `
 ('7200', '1610', '1610', 'EXAMEN', 'CURSO'),
 ('7200', '1716', '1716', 'EXAMEN', 'CURSO'),
 ('7200', '1721', '1716', 'CURSO', 'CURSO'),
+('7200', '1730', '1033', 'CURSO', 'EXAMEN'),
+('7200', '1730', '1224', 'CURSO', 'EXAMEN'),
+('7200', '1730', '1225', 'CURSO', 'EXAMEN'),
+('7200', '1730', '1446', 'CURSO', 'EXAMEN'),
+('7200', '1730', '1610', 'CURSO', 'EXAMEN'),
+('7200', '1730', '1721', 'CURSO', 'EXAMEN'),
+('7200', '1730', '1911', 'CURSO', 'EXAMEN'),
 ('7200', '1768', '1749', 'CURSO', 'CURSO'),
 ('7200', '1911', '1911', 'EXAMEN', 'CURSO'),
 ('7200', '1930', '1930', 'EXAMEN', 'CURSO'),
 ('7200', '1940', '1940', 'EXAMEN', 'CURSO'),
-('7200', '5705', '1721', 'CURSO', 'CURSO');
+('7200', '5705', '1721', 'CURSO', 'CURSO'),
+('7200', '5707', '1151', 'CURSO', 'EXAMEN');
 
 -- --------------------------------------------------------
 
@@ -948,8 +960,8 @@ ALTER TABLE `curso_grupo`
 -- Filtros para la tabla `previas_creditos`
 --
 ALTER TABLE `previas_creditos`
-  ADD CONSTRAINT `previas_creditos_ibfk_2` FOREIGN KEY (`idCurso`) REFERENCES `cursos` (`idCurso`),
-  ADD CONSTRAINT `previas_creditos_ibfk_1` FOREIGN KEY (`idCarrera`) REFERENCES `carreras` (`idCarrera`);
+  ADD CONSTRAINT `previas_creditos_ibfk_1` FOREIGN KEY (`idCarrera`) REFERENCES `carreras` (`idCarrera`),
+  ADD CONSTRAINT `previas_creditos_ibfk_2` FOREIGN KEY (`idCurso`) REFERENCES `cursos` (`idCurso`);
 
 --
 -- Filtros para la tabla `previas_cursos`
