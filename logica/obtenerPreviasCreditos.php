@@ -1,50 +1,51 @@
 <?php
-function obtenerPreviasCreditos ($idCarrera){
-	
-	//Obtener info de la base y armar el array
-	
-	$previas_creditos = array(
-		'C2034' => array(
-					'area' => 'CARRERA',
-					'creditos' => 250,
-		),
-		'C1510' => array(
-					'area' => 'CARRERA',
-					'creditos' => 80,
-		),
-		'C1730' => array(
-					'area' => 'CARRERA',
-					'creditos' => 330,
-		),
-		'C2036' => array(
-					'area' => 'CARRERA',
-					'creditos' => 250,
-		),
-		'C1519' => array(
-					'area' => 'CARRERA',
-					'creditos' => 100,
-		),
-		'C1944' => array(
-					'area' => 'CARRERA',
-					'creditos' => 250,
-		),
-		'C1213' => array(
-					'area' => 'CARRERA',
-					'creditos' => 100,
-		),
-		'C1507' => array(
-					'area' => 'CARRERA',
-					'creditos' => 100,
-		),
-	);	
-	
-	$previasCreditosJson = json_encode($previas_creditos);
-	
-	echo $previasCreditosJson;
-	
-	
-}
 
-obtenerPreviasCreditos($_POST['idCarrera']);
+include ('../persistencia/conexion.php');
+
+
+function obtenerPreviasCreditos ($idCarrera){
+
+	$previas_creditos = array();
+	
+	try {
+	
+		//Abro conexion
+		$bd = conectar();
+		//$fila = array();
+		
+		if($bd != null){
+			$bd->autocommit(false);
+			
+			$bd->begin_transaction();
+			
+			$filas= $bd->query("SELECT * FROM previas_creditos WHERE idCarrera = '$idCarrera'");
+				
+			if($filas != false and $filas->num_rows != 0 ){
+				while($fila = $filas->fetch_assoc()) {
+										
+					$idCurso = 'C' . $fila["idCurso"];
+					$area = $fila["area"];
+					$creditos = $fila["creditos"];
+					
+					$previas_creditos[$idCurso]["area"]= $area;
+					$previas_creditos[$idCurso]["creditos"]= intval($creditos);
+						
+				}
+			}
+			
+			//echo ' grafo: ' . json_encode($previas_creditos) . '<br>';
+			
+			//var_dump($previas_creditos);
+			
+			//Cierro conexion
+			$bd->close();
+		}
+	} catch (Exception $e) {
+		echo 'Excepcion capturada: ',  $e->getMessage(), "\n";
+	}
+
+}//end obtenerPreviasCreditos
+ 
+obtenerPreviasCreditos('7200');
  
 ?>
