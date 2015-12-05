@@ -2,6 +2,7 @@ function cargarEventos(cy, cyr){
 
 	cyr.on('click', 'node', function(event){
 		var node = event.cyTarget;
+	
 		//obtengo idNodo
 		var idNodo = node.id();
 		
@@ -20,14 +21,27 @@ function cargarEventos(cy, cyr){
 		
 	});
 	
-	jQuery("#cy").on('mousedown', function(e){
+	cyr.on('cxttapstart ', 'node', function(event){
+		
+		var node = event.cyTarget;
+		
+		//obtengo idNodo
+		var idNodo = node.id();
+		cambiarVisibilidadAristas(cyr, idNodo);
+		//mostrarDatosCurso(cy, cyr, idNodo);
+		
+	});
 	
+	/*jQuery("#cy").on('mousedown', function(e){
+		console.log(e);
 		if( e.button == 2 ) { 
-		  rollback();
-	
+		  //rollback();
+			cyr.$('#cy').select();
 		} 
 
-	});
+	});*/
+	
+	
 	
 }
 

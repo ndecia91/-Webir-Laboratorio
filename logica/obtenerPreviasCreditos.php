@@ -33,7 +33,7 @@ function obtenerPreviasCreditos ($idCarrera){
 				}
 			}
 			
-			//echo ' grafo: ' . json_encode($previas_creditos) . '<br>';
+			echo json_encode($previas_creditos);
 			
 			//var_dump($previas_creditos);
 			

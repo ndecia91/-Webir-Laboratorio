@@ -4,9 +4,9 @@ var estilosNodos =
 	'text-valign': 'center',
 	'text-halign': 'center',
 	'shape':'roundrectangle',
-	'width': '120px',
+	'width': '130px',
 	'text-wrap': 'wrap',
-	'text-max-width' : '120px',
+	'text-max-width' : '130px',
 	'text-max-height' : '25px',
 	'height': '25px',
 	'color':'white',
@@ -18,7 +18,7 @@ var estilosNodos =
 	'cursor' : 'pointer',
 	'border-width' : 0.8,
 	'border-color' : '#333333',
-	'font-size' : '12px'
+	'font-size' : '11px'
 }
 
 var estilosAristas = 
@@ -40,7 +40,7 @@ var estilosAristas =
     'text-border-style':'solid',
     'text-border-color':'#333333',
     'text-border-opacity' : 0.8,
-
+	'visibility': 'hidden',
  
 
 }

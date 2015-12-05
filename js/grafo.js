@@ -172,7 +172,7 @@ function construirGrafoReducido(cy, idCarrera){
 		container: document.getElementById('cy'),
 		boxSelectionEnabled: false,
 		autounselectify: true,
-		layout: { name: 'grid' }, //fit: false, //name: 'preset',
+		layout: { name: 'grid',  }, //fit: false, //name: 'preset',
 		
 		style: [ {selector: 'node', style: estilosNodos },
 				 { selector: 'edge', style: estilosAristas }
@@ -182,7 +182,7 @@ function construirGrafoReducido(cy, idCarrera){
 	
 	cargarEventos(cy, cyr);
 	inicializarGrafo(cyr);
-	console.log("push");
+
 	stack.push(cyr.json());
 }
 
@@ -204,8 +204,8 @@ function obtenerPreviasCreditos(idCarrera){
 
 function tienePreviaDeCreditos(idNodo)
 {
-	console.log(previasCreditos);
-	return (previasCreditos[idNodo] != undefined)
+	
+	return (previasCreditos[idNodo] != undefined);
 }
 
 function inicializarGrafo(grafo){
@@ -309,8 +309,6 @@ function actualizarGrafo(cy, cyr, idNodo){
 	
 	if(estadoNodo == "HABILITADO"){
 		//Actualizo el estado del nodo
-		if(tienePreviaDeCreditos(idNodo) && (cantCreditos < previasCreditos[idNodo]))
-			return;
 		actualizarEstadoNodo(cy, cyr, idNodo);
 	}else if(estadoNodo == "APROBADO"){
 		//Curso exonerado
@@ -331,15 +329,18 @@ function actualizarGrafo(cy, cyr, idNodo){
 	
 	cursosAdyacentes.forEach(function(curso, i){
 		var estadoCurso = obtenerDatosNodo(cyr, curso.id).estado;
-		
+				
 		if (estadoCurso == "INHABILITADO") {
+
 			var aprobado = cursoAprobado(cy, cyr, curso.id);
 			
-			if(aprobado)
-				actualizarEstadoNodo(cy, cyr, curso.id);
+			if(aprobado) {
+				if(!tienePreviaDeCreditos(curso.id) || (cantCreditos >= parseInt(previasCreditos[curso.id].creditos)))
+					actualizarEstadoNodo(cy, cyr, curso.id);
+			}
 		}		
 	});
-	console.log("push");
+	
 	stack.push(cyr.json());
 }
 /*
@@ -385,7 +386,18 @@ function actualizarEstadoNodo(cy, cyr, idNodo){
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#008000');
 		var datosNodo = obtenerDatosNodo(cy, idNodo);
 		cantCreditos = cantCreditos + parseInt(datosNodo.creditos);
-		jQuery(".cant_creditos").html("Creditos acumulados: "+cantCreditos+" creditos")
+		jQuery(".cant_creditos").html("Creditos totales: "+cantCreditos)
+		jQuery.each(previasCreditos, function(key, value)
+		{
+			if (parseInt(value.creditos) <= cantCreditos &&
+				cursoAprobado(cy,cyr,key) &&
+				(obtenerDatosNodo(cyr, key).estado == 'INHABILITADO'))
+			{
+				modificarDatoNodo(cyr, key, 'estado', 'HABILITADO');
+				modificarEstiloNodo(cyr, key, 'background-color', '#e60000');
+				modificarEstiloNodo(cyr, key, 'visibility', 'visible');
+			}
+		});
 	}else if(estado == "EXONERADO"){
 		modificarDatoNodo(cyr, idNodo, 'estado', 'HABILITADO');
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#e60000');
@@ -410,7 +422,7 @@ function cursoAprobado(cy, cyr, idNodo){
 			}else{
 				
 				var estadoNodoPadre = obtenerDatosNodo(cyr, idPadre).estado;
-				console.log("estado:"+estadoNodoPadre);
+				
 				if ((actividadPreviaArista == "CURSO") && 
 					((estadoNodoPadre == "INHABILITADO") || (estadoNodoPadre == "HABILITADO")))
 					return false;
@@ -482,18 +494,20 @@ function grupoAprobado(cy, cyr, idNodo){
 
 function mostrarDatosCurso(cy,cyr,idNodo)
 {
+	
 	var selector = '#' + idNodo;
 	var datos = obtenerDatosNodo(cy, idNodo);
-	
+	creditosMinimos = previasCreditos[idNodo] == undefined ? 'N/A' : previasCreditos[idNodo].creditos+' créditos';
 	cyr.$(selector).qtip({
 		content: {text: '<strong>Créditos: </strong>'+ datos.creditos +
+						'<br><strong>Créditos mínimos: </strong>'+ creditosMinimos  +
 						'<br><strong>Validez: </strong>'+ (datos.validez == "999" ? 'N/A' : datos.validez + " meses")  +
 						'<br><strong>Exonerable: </strong>'+ datos.exonerable +
 						'<br><strong>Nota Promedio: </strong>'+ datos.nota_promedio +
 						'<br><strong>Inscriptos: </strong>'+ datos.total_cursantes +
 						'<br><strong>Aprobados: </strong>'+ datos.aprobados +
 						'<br><strong>Exonerados: </strong>'+ datos.exonerados +
-						'<br><strong>% Aprobación: </strong>'+ datos.porcentaje_aprobacion,
+						'<br><strong>% Aprobación: </strong>'+ datos.aprobacion,
 				  title:'Información Curso'
 		},
 		position: {
@@ -512,6 +526,22 @@ function mostrarDatosCurso(cy,cyr,idNodo)
 			max_width: 30,
 		}
 });
+}
+
+function cambiarVisibilidadAristas(cyr, idNodo){
+	var selector = '#' + idNodo;
+	var nodo = cyr.nodes(selector);
+	var aristasIncidentes = nodo.incomers(
+		function() { 
+  			return this.isEdge();
+		}
+	);
+
+	
+	aristasIncidentes.forEach(function(arista, i){
+			var visibilidad = arista.style().visibility == "hidden" ? "visible" : "hidden";
+			arista.style('visibility', visibilidad);
+	});
 }
 
 
