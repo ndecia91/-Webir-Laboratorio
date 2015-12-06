@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.1.14
+-- version 4.4.10
 -- http://www.phpmyadmin.net
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 05-12-2015 a las 19:15:27
--- Versión del servidor: 5.6.17
--- Versión de PHP: 5.5.12
+-- Servidor: localhost
+-- Tiempo de generación: 07-12-2015 a las 00:49:46
+-- Versión del servidor: 5.5.42
+-- Versión de PHP: 5.6.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -14,7 +14,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Base de datos: `sistema_previas`
@@ -26,10 +26,9 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `carreras`
 --
 
-CREATE TABLE IF NOT EXISTS `carreras` (
+CREATE TABLE `carreras` (
   `idCarrera` varchar(10) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
-  `nombre` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL,
-  PRIMARY KEY (`idCarrera`)
+  `nombre` varchar(100) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -45,7 +44,7 @@ INSERT INTO `carreras` (`idCarrera`, `nombre`) VALUES
 -- Estructura de tabla para la tabla `cursos`
 --
 
-CREATE TABLE IF NOT EXISTS `cursos` (
+CREATE TABLE `cursos` (
   `idCurso` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `nombre` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
   `descripcion` varchar(200) COLLATE utf8_spanish_ci NOT NULL,
@@ -58,8 +57,7 @@ CREATE TABLE IF NOT EXISTS `cursos` (
   `total_cursantes` int(10) NOT NULL,
   `aprobados` int(10) NOT NULL,
   `exonerados` int(10) NOT NULL,
-  `porcentaje_aprobacion` float NOT NULL,
-  PRIMARY KEY (`idCurso`)
+  `porcentaje_aprobacion` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -68,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `cursos` (
 
 INSERT INTO `cursos` (`idCurso`, `nombre`, `descripcion`, `instituto`, `creditos`, `validez`, `semestre`, `exonerable`, `nota_promedio`, `total_cursantes`, `aprobados`, `exonerados`, `porcentaje_aprobacion`) VALUES
 ('1011', 'TEORIA DE CODIGOS AVANZADO', '', '', 6, 999, 8, 'No', '0', 0, 0, 0, 0),
-('1012', 'COMBINATORIA ANALITICA', '', '', 8, 999, 5, 'No', '6.0', 4, 0, 4, 100),
+('1012', 'COMBINATORIA ANALITICA', '', '', 8, 999, 7, 'No', '6.0', 4, 0, 4, 100),
 ('1020', 'CALCULO 1', '', '', 16, 20, 1, 'Sí', '1.1', 1267, 499, 145, 11.4),
 ('1022', 'CALCULO 2', '', '', 16, 20, 2, 'Sí', '1.6', 432, 261, 91, 21.1),
 ('1023', 'MATEMATICA DISCRETA 1', '', '', 9, 20, 2, 'Sí', '2.0', 157, 106, 34, 21.7),
@@ -107,7 +105,7 @@ INSERT INTO `cursos` (`idCurso`, `nombre`, `descripcion`, `instituto`, `creditos
 ('1340', 'PROGRAMACION LOGICA', '', '', 10, 999, 7, 'No', '2.4', 68, 0, 58, 85.3),
 ('1347', 'CONST.FORMAL DE PROGR.EN TEORIA DE TIPOS', '', '', 12, 999, 8, 'No', '0', 0, 0, 0, 0),
 ('1350', 'PROGRAMACION FUNCIONAL AVANZADA', '', '', 12, 999, 8, 'No', '3.7', 7, 0, 7, 100),
-('1351', 'COMBINATORIA ANALITICA Y APLICACIONES', '', '', 3, 999, 1, 'No', '0', 0, 0, 0, 0),
+('1351', 'COMBINATORIA ANALITICA Y APLICACIONES', '', '', 3, 999, 7, 'No', '0', 0, 0, 0, 0),
 ('1358', 'TEORIA DE LA COMPUTACION', '', '', 7, 999, 7, 'No', '5.3', 5, 0, 5, 100),
 ('1414', 'SISTEMAS DISTRIBUIDOS', '', '', 15, 999, 7, 'No', '0', 0, 0, 0, 0),
 ('1416', 'INT. A LA CRIPTOGRAFIA', '', '', 12, 999, 7, 'No', '0', 0, 0, 0, 0),
@@ -192,11 +190,9 @@ INSERT INTO `cursos` (`idCurso`, `nombre`, `descripcion`, `instituto`, `creditos
 -- Estructura de tabla para la tabla `curso_carrera`
 --
 
-CREATE TABLE IF NOT EXISTS `curso_carrera` (
+CREATE TABLE `curso_carrera` (
   `idCarrera` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
-  `idCurso` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
-  PRIMARY KEY (`idCarrera`,`idCurso`),
-  KEY `idCurso` (`idCurso`)
+  `idCurso` varchar(10) COLLATE utf8_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -329,13 +325,11 @@ INSERT INTO `curso_carrera` (`idCarrera`, `idCurso`) VALUES
 -- Estructura de tabla para la tabla `curso_grupo`
 --
 
-CREATE TABLE IF NOT EXISTS `curso_grupo` (
+CREATE TABLE `curso_grupo` (
   `idGrupo` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `idCurso` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `puntaje` int(2) NOT NULL,
-  `actividad` enum('CURSO','EXAMEN') COLLATE utf8_spanish_ci NOT NULL,
-  PRIMARY KEY (`idGrupo`,`idCurso`,`actividad`),
-  KEY `idCurso` (`idCurso`)
+  `actividad` enum('CURSO','EXAMEN') COLLATE utf8_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -458,12 +452,11 @@ INSERT INTO `curso_grupo` (`idGrupo`, `idCurso`, `puntaje`, `actividad`) VALUES
 -- Estructura de tabla para la tabla `grupos`
 --
 
-CREATE TABLE IF NOT EXISTS `grupos` (
+CREATE TABLE `grupos` (
   `idGrupo` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `nombre` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
   `min` int(2) NOT NULL,
-  `max` int(2) NOT NULL,
-  PRIMARY KEY (`idGrupo`)
+  `max` int(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -544,13 +537,11 @@ INSERT INTO `grupos` (`idGrupo`, `nombre`, `min`, `max`) VALUES
 -- Estructura de tabla para la tabla `previas_creditos`
 --
 
-CREATE TABLE IF NOT EXISTS `previas_creditos` (
+CREATE TABLE `previas_creditos` (
   `idCarrera` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `idCurso` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `area` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
-  `creditos` int(3) NOT NULL,
-  PRIMARY KEY (`idCarrera`,`idCurso`,`area`),
-  KEY `idCurso` (`idCurso`)
+  `creditos` int(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -576,15 +567,12 @@ INSERT INTO `previas_creditos` (`idCarrera`, `idCurso`, `area`, `creditos`) VALU
 -- Estructura de tabla para la tabla `previas_cursos`
 --
 
-CREATE TABLE IF NOT EXISTS `previas_cursos` (
+CREATE TABLE `previas_cursos` (
   `idCarrera` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `idCurso` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `idPrevia` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `actividad` enum('CURSO','EXAMEN') COLLATE utf8_spanish_ci NOT NULL,
-  `actividadPrevia` enum('CURSO','EXAMEN') COLLATE utf8_spanish_ci NOT NULL,
-  PRIMARY KEY (`idCarrera`,`idCurso`,`idPrevia`,`actividad`),
-  KEY `idCurso` (`idCurso`),
-  KEY `idPrevia` (`idPrevia`)
+  `actividadPrevia` enum('CURSO','EXAMEN') COLLATE utf8_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -649,14 +637,11 @@ INSERT INTO `previas_cursos` (`idCarrera`, `idCurso`, `idPrevia`, `actividad`, `
 -- Estructura de tabla para la tabla `previas_grupos`
 --
 
-CREATE TABLE IF NOT EXISTS `previas_grupos` (
+CREATE TABLE `previas_grupos` (
   `idCarrera` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `idCurso` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
   `idGrupo` varchar(10) COLLATE utf8_spanish_ci NOT NULL,
-  `actividad` enum('CURSO','EXAMEN') COLLATE utf8_spanish_ci NOT NULL,
-  PRIMARY KEY (`idCarrera`,`idCurso`,`idGrupo`,`actividad`),
-  KEY `idCurso` (`idCurso`),
-  KEY `idGrupo` (`idGrupo`)
+  `actividad` enum('CURSO','EXAMEN') COLLATE utf8_spanish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -937,6 +922,65 @@ INSERT INTO `previas_grupos` (`idCarrera`, `idCurso`, `idGrupo`, `actividad`) VA
 ('7200', '5916', '1911E', 'CURSO'),
 ('7200', '5916', 'CP29', 'CURSO'),
 ('7200', '5916', 'CP4', 'CURSO');
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `carreras`
+--
+ALTER TABLE `carreras`
+  ADD PRIMARY KEY (`idCarrera`);
+
+--
+-- Indices de la tabla `cursos`
+--
+ALTER TABLE `cursos`
+  ADD PRIMARY KEY (`idCurso`);
+
+--
+-- Indices de la tabla `curso_carrera`
+--
+ALTER TABLE `curso_carrera`
+  ADD PRIMARY KEY (`idCarrera`,`idCurso`),
+  ADD KEY `idCurso` (`idCurso`);
+
+--
+-- Indices de la tabla `curso_grupo`
+--
+ALTER TABLE `curso_grupo`
+  ADD PRIMARY KEY (`idGrupo`,`idCurso`,`actividad`),
+  ADD KEY `idCurso` (`idCurso`);
+
+--
+-- Indices de la tabla `grupos`
+--
+ALTER TABLE `grupos`
+  ADD PRIMARY KEY (`idGrupo`);
+
+--
+-- Indices de la tabla `previas_creditos`
+--
+ALTER TABLE `previas_creditos`
+  ADD PRIMARY KEY (`idCarrera`,`idCurso`,`area`),
+  ADD KEY `idCurso` (`idCurso`);
+
+--
+-- Indices de la tabla `previas_cursos`
+--
+ALTER TABLE `previas_cursos`
+  ADD PRIMARY KEY (`idCarrera`,`idCurso`,`idPrevia`,`actividad`),
+  ADD KEY `idCurso` (`idCurso`),
+  ADD KEY `idPrevia` (`idPrevia`);
+
+--
+-- Indices de la tabla `previas_grupos`
+--
+ALTER TABLE `previas_grupos`
+  ADD PRIMARY KEY (`idCarrera`,`idCurso`,`idGrupo`,`actividad`),
+  ADD KEY `idCurso` (`idCurso`),
+  ADD KEY `idGrupo` (`idGrupo`);
 
 --
 -- Restricciones para tablas volcadas

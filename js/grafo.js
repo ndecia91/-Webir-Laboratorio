@@ -3,6 +3,9 @@ var cyr;
 var previasCreditos;
 var stack = [];
 var cantCreditos = 0;
+var posicionesSemestres = [];
+var habilitadosPorSemestre = [];
+var visible = []
 
 function obtenerGrafoDelServidor(idCarrera) {
 			
@@ -163,6 +166,13 @@ function obtenerDatosNodosRaiz(cy)
 }
 
 function construirGrafoReducido(cy, idCarrera){
+
+
+	for (var i = 1; i <= 10; i++) {
+		habilitadosPorSemestre[i] = 0;
+		visible[i] = true;
+	}
+
 	
 	obtenerPreviasCreditos(idCarrera);
 	
@@ -172,7 +182,7 @@ function construirGrafoReducido(cy, idCarrera){
 		container: document.getElementById('cy'),
 		boxSelectionEnabled: false,
 		autounselectify: true,
-		layout: { name: 'grid',  }, //fit: false, //name: 'preset',
+		layout: { fit: false, name: 'preset', }, //fit: false, //name: 'preset',
 		
 		style: [ {selector: 'node', style: estilosNodos },
 				 { selector: 'edge', style: estilosAristas }
@@ -183,6 +193,9 @@ function construirGrafoReducido(cy, idCarrera){
 	cargarEventos(cy, cyr);
 	inicializarGrafo(cyr);
 
+	agregarEstilosSemestres(cyr);
+
+	
 	stack.push(cyr.json());
 }
 
@@ -202,6 +215,64 @@ function obtenerPreviasCreditos(idCarrera){
 	});
 }
 
+function cantidadCursosSemestre(nroSemestre) {
+
+	var cursos = cy.nodes("[semestre='" + nroSemestre + "']");
+	return cursos.length;
+
+}
+
+function obtenerPosicionNodo(idNodo)
+{
+	var selectorNodo = '#' + idNodo;
+	var nodo = cyr.nodes(selectorNodo);
+	var datosNodo = obtenerDatosNodo(cy, idNodo);
+	var nroSemestre = parseInt(datosNodo.semestre);
+	var selectorSemestre = '#' + nroSemestre;
+	var semestre = cyr.nodes(selectorSemestre);
+	var posicion = {x:0,y:0};
+	
+
+
+	if (habilitadosPorSemestre[nroSemestre] == 0) {
+		
+		var paddingSemestresX = 140;
+		var paddingSemestresY = 90;
+		var offsetX = 40;
+		var offsetY = 190;
+		var row = Math.floor((nroSemestre - 1)/ 3);
+		var col = (nroSemestre  - 1) % 3;
+		var xPos =  offsetX + col*(3*(nodeWidth + 2*nodePadding) + paddingSemestresX);
+		var h1 = Math.ceil(cantidadCursosSemestre(nroSemestre - 9) / 3);
+		var h2 = Math.ceil(cantidadCursosSemestre(nroSemestre - 6) / 3);
+		var h3 = Math.ceil(cantidadCursosSemestre(nroSemestre - 3) / 3);
+		var yPos =  offsetY + (h1 + h2 + h3)*(nodeHeight + 2*nodePadding) + (h1 - 1)*(padding) + (h2- 1)*padding + (h3- 1)*padding +(h1 == 0? 0 : paddingSemestresY) + (h2 == 0? 0 : paddingSemestresY) + (h3 == 0? 0 : paddingSemestresY) ;
+			if (nroSemestre == 8) {
+				yPos +=nodeHeight + 2*nodePadding + padding;
+			}
+		posicionesSemestres[nroSemestre] = 	
+		{
+			x: xPos,
+			y: yPos
+		};
+		posicion.x = posicionesSemestres[nroSemestre].x + nodeWidth/2.0;
+		posicion.y = posicionesSemestres[nroSemestre].y + nodeHeight/2.0;
+	}
+	else {
+		var i = Math.floor((habilitadosPorSemestre[nroSemestre]) / maxColumnas);
+		var j =  (habilitadosPorSemestre[nroSemestre] ) % maxColumnas ; 
+		var offsetX = semestre.position().x - (semestre.width() + 2*nodePadding) / 2.0;
+		var offsetY = semestre.position().y - (semestre.height() + 2*nodePadding)/ 2.0;
+		posicion.x = offsetX + j*(nodeWidth + 2*nodePadding + padding) + (nodeWidth + 2*nodePadding)/2.0 + nodePadding; 
+		posicion.y = offsetY + i*(nodeHeight + 2*nodePadding + padding) + (nodeHeight + 2*nodePadding)/2.0 + nodePadding; 
+	}
+
+	habilitadosPorSemestre[nroSemestre]++;
+	return posicion;
+}
+
+
+
 function tienePreviaDeCreditos(idNodo)
 {
 	
@@ -209,15 +280,33 @@ function tienePreviaDeCreditos(idNodo)
 }
 
 function inicializarGrafo(grafo){
-	//Marco cursos raices como visibles, en color rojo y en estado habilitado
+	//Marco cursos raices como visibles, en color rojo y ffen estado habilitado
 	var nodosRaiz = obtenerDatosNodosRaiz(grafo);
 	nodosRaiz.forEach(function (nodo, i){
 		if (!tienePreviaDeCreditos(nodo.id)) {
-			modificarEstiloNodo(grafo, nodo.id, 'background-color', '#e60000');
-			modificarEstiloNodo(grafo, nodo.id, 'visibility', 'visible');
-			modificarDatoNodo(grafo, nodo.id, 'estado', 'HABILITADO');
+				if (isNaN(nodo.id)) {
+					var posicion = obtenerPosicionNodo(nodo.id);
+					//console.log(posicion);
+					modificarPosicionNodo(grafo,nodo.id,posicion.x,posicion.y);
+					modificarEstiloNodo(grafo, nodo.id, 'background-color', '#e60000');
+					modificarDatoNodo(grafo, nodo.id, 'estado', 'HABILITADO');
+					habilitarNodoSemestre(grafo,nodo.id);
+					modificarEstiloNodo(grafo, nodo.id, 'display', 'element');
+					modificarEstiloNodo(grafo, nodo.id, 'visibility', 'visible');
+				}
 		}
 	})
+}
+
+function habilitarNodoSemestre(cyr, idNodo)
+{
+	var datosNodo = obtenerDatosNodo(cy, idNodo);
+	if (!visible[datosNodo.semestre]) {
+		return;
+	}
+	//console.log(visible);
+	modificarEstiloNodo(cyr, datosNodo.semestre, 'display', 'element');
+	modificarEstiloNodo(cyr, datosNodo.semestre, 'visibility', 'visible');
 }
 
 function obtenerGrafoReducido(cy){
@@ -226,9 +315,20 @@ function obtenerGrafoReducido(cy){
 	
 	//Agrego nodos tipo curso
 	var grafo = [];
+	grafo.push({data: { id:'1', name:"Primer Semestre", }} );
+	grafo.push({data: { id:'2',name:"Segundo Semestre"}});
+	grafo.push({data: { id:'3' , name:"Tercer Semestre"}});
+	grafo.push({data: { id:'4', name:"Cuarto Semestre"} });
+	grafo.push({data: { id:'5', name:"Quinto Semestre"} });
+	grafo.push({data: { id:'6' , name:"Sexto Semestre"}});
+	grafo.push({data: { id:'7' , name:"Séptimo Semestre"}});
+	grafo.push({data: { id:'8' , name:"Octavo Semestre"}});
+	grafo.push({data: { id:'9' , name:"Noveno Semestre"}});
+	grafo.push({data: { id:'10' , name:"Décimo Semestre"}});
+
 	datosNodosCurso.forEach(
 		function(nodo, i){
-			grafo.push({data: { id: nodo.id, name: nodo.name, estado:'INHABILITADO'}});
+			grafo.push({data: { id: nodo.id, name: nodo.name, estado:'INHABILITADO', parent: nodo.semestre}});
 		}
 	);
 	
@@ -328,6 +428,7 @@ function actualizarGrafo(cy, cyr, idNodo){
 	var cursosAdyacentes = obtenerDatosCursosAdyacentes(cy, idNodo);
 	
 	cursosAdyacentes.forEach(function(curso, i){
+
 		var estadoCurso = obtenerDatosNodo(cyr, curso.id).estado;
 				
 		if (estadoCurso == "INHABILITADO") {
@@ -335,8 +436,11 @@ function actualizarGrafo(cy, cyr, idNodo){
 			var aprobado = cursoAprobado(cy, cyr, curso.id);
 			
 			if(aprobado) {
-				if(!tienePreviaDeCreditos(curso.id) || (cantCreditos >= parseInt(previasCreditos[curso.id].creditos)))
+				
+				if(!tienePreviaDeCreditos(curso.id) || (cantCreditos >= parseInt(previasCreditos[curso.id].creditos))) {
 					actualizarEstadoNodo(cy, cyr, curso.id);
+				}
+					
 			}
 		}		
 	});
@@ -375,9 +479,13 @@ function actualizarEstadoNodo(cy, cyr, idNodo){
 	var estado = datosNodo.estado;
 	
 	if(estado == "INHABILITADO"){
+		var posicion = obtenerPosicionNodo(idNodo);
+		modificarPosicionNodo(cyr,idNodo,posicion.x,posicion.y);
 		modificarDatoNodo(cyr, idNodo, 'estado', 'HABILITADO');
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#e60000');
+		modificarEstiloNodo(cyr, idNodo, 'display', 'element');
 		modificarEstiloNodo(cyr, idNodo, 'visibility', 'visible');
+		habilitarNodoSemestre(cyr,idNodo);
 	}else if(estado == "HABILITADO"){
 		modificarDatoNodo(cyr, idNodo, 'estado', 'APROBADO');
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#ff9900');
@@ -386,16 +494,20 @@ function actualizarEstadoNodo(cy, cyr, idNodo){
 		modificarEstiloNodo(cyr, idNodo, 'background-color', '#008000');
 		var datosNodo = obtenerDatosNodo(cy, idNodo);
 		cantCreditos = cantCreditos + parseInt(datosNodo.creditos);
-		jQuery(".cant_creditos").html("Creditos totales: "+cantCreditos)
+		jQuery(".cant_creditos").html("Créditos Totales: " + cantCreditos)
 		jQuery.each(previasCreditos, function(key, value)
 		{
 			if (parseInt(value.creditos) <= cantCreditos &&
 				cursoAprobado(cy,cyr,key) &&
 				(obtenerDatosNodo(cyr, key).estado == 'INHABILITADO'))
 			{
+				var posicion = obtenerPosicionNodo(key);
+				modificarPosicionNodo(cyr,key,posicion.x,posicion.y);
 				modificarDatoNodo(cyr, key, 'estado', 'HABILITADO');
 				modificarEstiloNodo(cyr, key, 'background-color', '#e60000');
+				modificarEstiloNodo(cyr, key, 'display', 'element');
 				modificarEstiloNodo(cyr, key, 'visibility', 'visible');
+				habilitarNodoSemestre(cyr,key);
 			}
 		});
 	}else if(estado == "EXONERADO"){

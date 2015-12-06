@@ -5,7 +5,6 @@ function cargarEventos(cy, cyr){
 	
 		//obtengo idNodo
 		var idNodo = node.id();
-		
 		actualizarGrafo(cy, cyr, idNodo);
 		
 	});
@@ -27,7 +26,13 @@ function cargarEventos(cy, cyr){
 		
 		//obtengo idNodo
 		var idNodo = node.id();
-		cambiarVisibilidadAristas(cyr, idNodo);
+		if (node.data().estado == undefined) {
+			modificarEstiloNodo(cyr ,idNodo, 'display', 'none');
+			visible[idNodo] = false;
+			console.log(idNodo);
+		}
+		else
+			cambiarVisibilidadAristas(cyr, idNodo);
 		//mostrarDatosCurso(cy, cyr, idNodo);
 		
 	});
