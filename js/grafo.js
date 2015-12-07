@@ -634,7 +634,7 @@ function mostrarDatosCurso(cy,cyr,idNodo)
 			event: 'mouseout'
 		},
 		style: {
-			classes: 'qtip-blue qtip-rounded qtip-shadow', 
+			classes: 'qtip-light qtip-rounded qtip-shadow', 
 			max_width: 30,
 		}
 });

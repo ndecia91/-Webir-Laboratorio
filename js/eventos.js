@@ -10,13 +10,14 @@ function cargarEventos(cy, cyr){
 	});
 
 	cyr.on('mouseover', 'node', function(event){
-		
+		 
 		var node = event.cyTarget;
-		
+		var datos = node.data();
+		console.log(node);
 		//obtengo idNodo
 		var idNodo = node.id();
 
-		//mostrarDatosCurso(cy, cyr, idNodo);
+		
 		
 	});
 	
@@ -31,10 +32,10 @@ function cargarEventos(cy, cyr){
 			visible[idNodo] = false;
 			console.log(idNodo);
 		}
-		else
+		else{
 			cambiarVisibilidadAristas(cyr, idNodo);
-		//mostrarDatosCurso(cy, cyr, idNodo);
-		
+			mostrarDatosCurso(cy, cyr, idNodo);
+		}
 	});
 	
 	/*jQuery("#cy").on('mousedown', function(e){
